@@ -1,7 +1,5 @@
 ---
-// @TASK P4-T1 - 전체 섹션 통합
-// @SPEC docs/planning/01-prd.md
-
+// @TASK 전체 섹션 통합 + 다국어
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/sections/Hero.astro';
 import Products from '../components/sections/Products.astro';
@@ -12,9 +10,13 @@ import About from '../components/sections/About.astro';
 import Portfolio from '../components/sections/Portfolio.astro';
 import FAQ from '../components/sections/FAQ.astro';
 import Contact from '../components/sections/Contact.astro';
+import { useTranslations, defaultLang, type Lang } from '../i18n/ui';
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 ---
 
-<Layout title="InsightFlo - AI 에이전트 제품 · GEO/SEO · 컨설팅">
+<Layout title={t('meta.homeTitle')} description={t('meta.homeDescription')}>
   <Hero />
   <Products />
   <Services />

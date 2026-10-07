@@ -1,0 +1,91 @@
+---
+// Company profile (English) - platform-first
+import Layout from '../../layouts/Layout.astro';
+
+const companyNameEn = "InsightFlo";
+const companyNameKo = "인사이트플로";
+const founded = "June 16, 2025";
+const city = "Seoul, South Korea";
+const ceoEn = "Dongkyoo Kwak";
+const ceoKo = "곽동규";
+const bizNumber = "820-09-03326";
+const email = "teo@insightflo.co";
+---
+
+<Layout title="Company - InsightFlo" description="InsightFlo is an AI software startup in Seoul building and operating a visual workflow automation platform where AI agents execute and manage business workflows.">
+  <div class="min-h-screen bg-white pt-24 pb-16">
+    <article class="max-w-3xl mx-auto px-6">
+      <h1 class="text-4xl font-bold text-navy mb-4">Company Profile</h1>
+      <p class="text-slate-500 mb-12">{companyNameEn} ({companyNameKo}) - AI software startup, Seoul, South Korea</p>
+
+      <div class="prose prose-slate max-w-none space-y-8">
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Overview</h2>
+          <p class="text-slate-600 leading-relaxed">
+            InsightFlo is an AI software startup founded in Seoul in June 2025. We build and operate a
+            <strong>visual workflow automation platform</strong>: draw a workflow on screen and AI agents
+            execute and manage it. The platform is built on the open-source Paperclip project and extended
+            with Claude and Codex adapters plus artifact verification. The same approach powers
+            'Onboarding' (mock.co.kr), our AI-native daily news briefing, and our in-development
+            GEO/SEO audit agent.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Company Information</h2>
+          <ul class="text-slate-600 mt-4 space-y-2">
+            <li><strong>Legal name:</strong> {companyNameKo} ({companyNameEn})</li>
+            <li><strong>Founder &amp; CEO:</strong> {ceoEn} ({ceoKo}) - <a href="https://www.linkedin.com/in/dongkyookwak" class="text-blue-600 hover:underline">LinkedIn</a></li>
+            <li><strong>Founded:</strong> {founded}</li>
+            <li><strong>Location:</strong> {city}</li>
+            <li><strong>Business registration no.:</strong> {bizNumber}</li>
+            <li><strong>Industry:</strong> Software development (AI / Machine Learning)</li>
+            <li><strong>Website:</strong> <a href="https://insightflo.co" class="text-blue-600 hover:underline">insightflo.co</a></li>
+            <li><strong>Contact:</strong> <a href={`mailto:${email}`} class="text-blue-600 hover:underline">{email}</a></li>
+            <li><strong>Profiles:</strong> <a href="https://www.crunchbase.com/organization/insightflo" class="text-blue-600 hover:underline">Crunchbase</a> · <a href="https://www.linkedin.com/company/insightflo-co/" class="text-blue-600 hover:underline">LinkedIn Company Page</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Products</h2>
+          <div class="mt-4 space-y-6">
+            <div>
+              <p class="text-slate-700 font-semibold">Visual Workflow Automation Platform <span class="text-slate-400 font-normal">(main product · in production)</span></p>
+              <p class="text-slate-600 mt-2 leading-relaxed">
+                Draw a workflow on screen and AI agents run it. Run tracking, retry and resume on failure,
+                and artifact verification are managed in one place, with Claude and Codex adapters
+                connecting LLM execution.
+              </p>
+            </div>
+            <div>
+              <p class="text-slate-700 font-semibold">Onboarding (Manual Onboarding) <span class="text-slate-400 font-normal">- live service</span></p>
+              <p class="text-slate-600 mt-2 leading-relaxed">
+                An AI-native daily news briefing (<a href="https://mock.co.kr" class="text-blue-600 hover:underline">mock.co.kr</a>)
+                whose content pipeline - research, drafting, publishing, and distribution -
+                is automated end-to-end with LLM agents.
+              </p>
+            </div>
+            <div>
+              <p class="text-slate-700 font-semibold">GEO/SEO Audit Agent <span class="text-slate-400 font-normal">(in development)</span></p>
+              <p class="text-slate-600 mt-2 leading-relaxed">
+                Analyzes a website, diagnoses search-engine and generative-AI visibility issues,
+                and auto-generates prioritized improvement reports.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Technology</h2>
+          <p class="text-slate-600 leading-relaxed">
+            TypeScript (React · Node.js), a workflow DAG execution engine, Claude and Codex adapters,
+            RAG architecture, web crawling and analytics integration (GA4, Google Search Console),
+            and AWS and Cloudflare infrastructure.
+          </p>
+        </section>
+
+      </div>
+    </article>
+  </div>
+</Layout>

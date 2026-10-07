@@ -1,45 +1,20 @@
 ---
-// @TASK 디자인 리뉴얼 - Portfolio
-// @SPEC design/code.html#portfolio
+// @TASK 다국어 Portfolio
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
 
-interface PortfolioItem {
-  title: string;
-  client: string;
-  description: string;
-  tags: string[];
-  url?: string;
-  status: 'completed' | 'in-progress';
-  image?: string;
-}
-
-const portfolioItems: PortfolioItem[] = [
-  {
-    title: '새봄컨설팅 공식 웹사이트',
-    client: '새봄컨설팅',
-    description: '해외 수출 인증·허가 전문 관세사 사무실 랜딩페이지. AI 자동화와 전문 관세사 검토를 결합한 서비스 소개 및 견적 문의 기능 구현.',
-    tags: ['Astro', 'React', 'Tailwind CSS', '랜딩페이지'],
-    url: 'https://www.newbom.co.kr',
-    status: 'completed',
-  },
-  {
-    title: '관세 AI 신고서 생성 시스템',
-    client: '새봄컨설팅',
-    description: 'AI 기반 수출입 신고서 자동 생성 시스템. 관세사 업무 효율화를 위한 문서 자동화 솔루션 개발 예정.',
-    tags: ['AI', 'Python', 'FastAPI', '문서 자동화'],
-    status: 'in-progress',
-  },
-];
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 ---
 
 <section id="portfolio" class="py-24 bg-slate-50">
   <div class="max-w-7xl mx-auto px-6">
     <div class="text-center mb-16">
-      <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-4">Portfolio</h2>
-      <p class="text-slate-500 text-lg">최근 완료 및 진행 중인 프로젝트</p>
+      <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-4">{t('portfolio.eyebrow')}</h2>
+      <p class="text-slate-500 text-lg">{t('portfolio.sub')}</p>
     </div>
 
     <div class="grid md:grid-cols-2 gap-8">
-      {portfolioItems.map((item) => (
+      {t('portfolio.items').map((item: { title: string; client: string; description: string; tags: string[]; url?: string; status: string }) => (
         <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100">
           {/* Card Header */}
           <div class="p-6 pb-4">
@@ -53,7 +28,7 @@ const portfolioItems: PortfolioItem[] = [
                   <span class={`w-1.5 h-1.5 rounded-full ${
                     item.status === 'completed' ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
                   }`}></span>
-                  {item.status === 'completed' ? '완료' : '진행 예정'}
+                  {item.status === 'completed' ? t('portfolio.statusDone') : t('portfolio.statusWip')}
                 </span>
               </div>
               {item.url && (
@@ -65,6 +40,7 @@ const portfolioItems: PortfolioItem[] = [
                   aria-label="사이트 방문"
                 >
                   <span class="material-symbols-outlined text-xl">open_in_new</span>
+                  <span class="sr-only">{t('portfolio.visit')}</span>
                 </a>
               )}
             </div>

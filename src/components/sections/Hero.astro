@@ -1,5 +1,9 @@
 ---
-// @TASK 디자인 리뉴얼 - Hero
+// @TASK 다국어 Hero
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 ---
 
 <section id="hero" class="relative min-h-screen flex items-center justify-center hero-gradient pt-20 overflow-hidden">
@@ -15,42 +19,36 @@
     <!-- Badge -->
     <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full mb-8 backdrop-blur-sm">
       <span class="material-symbols-outlined text-blue-400 text-sm">rocket_launch</span>
-      <span class="text-sm font-medium text-white/90">2025년 설립 · AI 에이전트 스타트업</span>
+      <span class="text-sm font-medium text-white/90">{t('hero.badge')}</span>
     </div>
 
     <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight">
       InsightFlo
     </h1>
     <h2 class="text-xl md:text-3xl font-medium text-blue-100/90 mb-6 max-w-3xl mx-auto leading-relaxed">
-      업무를 워크플로우로 옮기면,<br/>
-      <span class="text-blue-400">AI 에이전트가 실행하고 관리합니다</span>
+      {t('hero.headline')[0]}<br/>
+      <span class="text-blue-400">{t('hero.headline')[1]}</span>
     </h2>
     <p class="text-base md:text-lg text-white/60 mb-12 max-w-2xl mx-auto">
-      비주얼 워크플로우 자동화 플랫폼을 직접 만들어 운영합니다. 매일 발행되는 AI 매체 '온보딩'과 GEO/SEO 진단 에이전트에 같은 방식을 씁니다.
+      {t('hero.sub')}
     </p>
     <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
       <a href="#products" class="px-10 py-5 bg-white text-navy rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all">
-        제품 보기
+        {t('hero.ctaPrimary')}
       </a>
       <a href="#contact" class="px-10 py-5 bg-transparent border border-white/30 text-white rounded-xl font-bold text-lg hover:bg-white/10 transition-all">
-        무료 상담 신청
+        {t('hero.ctaSecondary')}
       </a>
     </div>
 
     <!-- Stats -->
     <div class="grid grid-cols-3 gap-4 sm:gap-8 mt-16 max-w-2xl mx-auto">
-      <div class="text-center">
-        <div class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">581편+</div>
-        <div class="text-xs sm:text-sm text-white/60 mt-1">자체 매체 누적 발행</div>
-      </div>
-      <div class="text-center">
-        <div class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">매일</div>
-        <div class="text-xs sm:text-sm text-white/60 mt-1">자동 발행 운영 중</div>
-      </div>
-      <div class="text-center">
-        <div class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">10년+</div>
-        <div class="text-xs sm:text-sm text-white/60 mt-1">도메인 실무 경험</div>
-      </div>
+      {t('hero.stats').map((stat: { value: string; label: string }) => (
+        <div class="text-center">
+          <div class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">{stat.value}</div>
+          <div class="text-xs sm:text-sm text-white/60 mt-1">{stat.label}</div>
+        </div>
+      ))}
     </div>
 
     <!-- Product Screenshot -->
@@ -62,9 +60,9 @@
           <span class="w-3 h-3 rounded-full bg-green-400/80"></span>
           <div class="flex-1 bg-slate-900/70 rounded-md px-3 py-1 text-xs text-white/50 text-left font-mono">mock.co.kr</div>
         </div>
-        <img src="/images/onboarding-screenshot.png" alt="AI 네이티브 뉴스 브리핑 온보딩(mock.co.kr) 화면" class="rounded-xl w-full" loading="lazy" />
+        <img src="/images/onboarding-screenshot.png" alt={t('hero.shotAlt')} class="rounded-xl w-full" loading="lazy" />
       </div>
-      <p class="text-white/40 text-xs mt-4">자체 운영 중인 AI 매체 '온보딩' — 리서치부터 발행·배포까지 전 과정 자동화, 지표는 그대로 공개</p>
+      <p class="text-white/40 text-xs mt-4">{t('hero.shotCaption')}</p>
     </div>
   </div>
 </section>

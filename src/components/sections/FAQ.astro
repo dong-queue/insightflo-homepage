@@ -1,5 +1,9 @@
 ---
-// FAQ - 자주 묻는 질문 (SEO/GEO 메타 증명)
+// FAQ - 자주 묻는 질문 (다국어)
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 ---
 
 <section id="faq" class="py-24 bg-white">
@@ -7,83 +11,26 @@
     <!-- Section Header -->
     <div class="text-center mb-16">
       <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-3">FAQ</h2>
-      <h3 class="text-4xl font-bold text-navy">자주 묻는 질문</h3>
+      <h3 class="text-4xl font-bold text-navy">{t('faq.heading')}</h3>
     </div>
 
     <div class="space-y-4">
-      <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-        <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-          워크플로우 자동화 플랫폼이 무엇인가요?
-          <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
-        </summary>
-        <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-          업무 흐름을 화면에서 시각적으로 구성하면 AI 에이전트가 실행해주는 시스템입니다. 실행 추적, 실패 시 재시도·재개, 산출물 검증까지 관리하며, 오픈소스 Paperclip을 기반으로 확장해 구축했습니다.
-        </div>
-      </details>
-
-      <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-        <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-          GEO가 무엇인가요?
-          <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
-        </summary>
-        <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-          Generative Engine Optimization의 약자입니다. ChatGPT, Claude, Perplexity 같은 생성형 AI가 질문에 답할 때 내 웹사이트를 찾아 인용하도록 만드는 작업이에요. 기존 SEO가 검색 결과에서의 순위를 다룬다면, GEO는 AI 답변 안에 들어가는 자리를 다룹니다.
-        </div>
-      </details>
-
-      <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-        <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-          SEO와 GEO는 같이 해야 하나요?
-          <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
-        </summary>
-        <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-          네. 생성형 AI도 결국 검색 결과를 참고하기 때문에 기본 SEO가 무너진 상태에서는 GEO 효과를 기대하기 어렵습니다. 구조·콘텐츠·스키마를 함께 잡는 게 순서입니다. 저희는 이 사이트와 자체 매체에 같은 기준을 적용해 운영합니다.
-        </div>
-      </details>
-
-      <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-        <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-          '온보딩'은 어떻게 운영되고 있나요?
-          <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
-        </summary>
-        <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-          리서치, 초안 작성, 발행, 배포까지 콘텐츠 파이프라인 전 과정을 AI 에이전트가 자동으로 돌립니다. 매일 발행되고 있으며 발행 편수·조회수 같은 운영 지표는 <a href="https://mock.co.kr" target="_blank" rel="noopener noreferrer" class="text-deep-blue font-semibold hover:underline">mock.co.kr</a>에서 그대로 공개합니다.
-        </div>
-      </details>
-
-      <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-        <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-          자체 제품을 직접 만드는 이유가 뭔가요?
-          <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
-        </summary>
-        <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-          파는 것을 우리가 먼저 쓰기 위해서입니다. 노출 최적화와 자동화를 직접 운영해보니 뭘 해야 하고 뭘 하면 안 되는지가 명확해집니다. 자체 매체에서 실패한 방법은 고객 프로젝트에 쓰지 않습니다.
-        </div>
-      </details>
-
-      <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-        <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-          컨설팅은 어떻게 진행되나요?
-          <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
-        </summary>
-        <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-          현업 흐름 진단(1~2주) → 검증 가능한 MVP(2주~) → 운영 이관 순으로 진행합니다. 처음부터 큰 시스템을 만들지 않습니다. 작게 검증하고 확장하는 게 실패 확률을 줄이는 방법이라고 믿습니다.
-        </div>
-      </details>
-
-      <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-        <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-          어느 정도 규모의 기업에 적합한가요?
-          <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
-        </summary>
-        <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-          AI를 처음 도입하는 중소기업부터, 시범 사업은 돌려봤지만 운영 가능한 구조가 필요한 기업까지입니다. 회계·물류·관세 분야 실무 경험이 있어 해당 업종에서는 더 빠르게 시작할 수 있습니다.
-        </div>
-      </details>
+      {t('faq.items').map((item: { q: string; a?: string; aHtml?: string }) => (
+        <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
+          <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
+            {item.q}
+            <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
+          </summary>
+          <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
+            {item.aHtml ? <Fragment set:html={item.aHtml} /> : item.a}
+          </div>
+        </details>
+      ))}
     </div>
   </div>
 </section>
 
 <style>
   summary::-webkit-details-marker { display: none; }
+  .text-deep-blue { color: #1E3A5F; }
 </style>

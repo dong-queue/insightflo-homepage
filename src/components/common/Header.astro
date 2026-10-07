@@ -1,5 +1,10 @@
 ---
-// @TASK 디자인 리뉴얼 - Header
+// @TASK 다국어 Header - 내비 사전 + KO/EN 전환기
+import { useTranslations, alternatePath, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
+const switchHref = alternatePath(Astro.url.pathname, lang === 'ko' ? 'en' : 'ko');
 ---
 
 <header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
@@ -13,25 +18,31 @@
     </a>
 
     <!-- Desktop Nav -->
-    <div class="hidden md:flex items-center gap-10">
-      <a href="#about" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">About</a>
-      <a href="#services" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">Services</a>
-      <a href="#tech-stack" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">Tech Stack</a>
-      <a href="#contact" class="px-5 py-2.5 bg-deep-blue text-white rounded-lg text-sm font-bold hover:bg-navy transition-colors">Contact</a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#products" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">{t('nav.products')}</a>
+      <a href="#services" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">{t('nav.services')}</a>
+      <a href="#about" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">{t('nav.about')}</a>
+      <a href="#contact" class="px-5 py-2.5 bg-deep-blue text-white rounded-lg text-sm font-bold hover:bg-navy transition-colors">{t('nav.contact')}</a>
+      <a
+        href={switchHref}
+        class="text-xs font-bold text-slate-500 border border-slate-200 rounded-full px-3 py-1.5 hover:border-deep-blue hover:text-deep-blue transition-colors"
+        aria-label={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}
+      >{lang === 'ko' ? 'EN' : 'KO'}</a>
     </div>
 
     <!-- Mobile Menu Button -->
-    <button id="mobile-menu-button" class="md:hidden p-2" aria-label="메뉴">
+    <button id="mobile-menu-button" class="md:hidden p-2" aria-label={lang === 'ko' ? '메뉴' : 'Menu'}>
       <span class="material-symbols-outlined text-slate-600">menu</span>
     </button>
   </nav>
 
   <!-- Mobile Menu -->
   <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-slate-100 px-6 py-4 space-y-4">
-    <a href="#about" class="block text-slate-600 font-semibold py-2" data-mobile-link>About</a>
-    <a href="#services" class="block text-slate-600 font-semibold py-2" data-mobile-link>Services</a>
-    <a href="#tech-stack" class="block text-slate-600 font-semibold py-2" data-mobile-link>Tech Stack</a>
-    <a href="#contact" class="block bg-deep-blue text-white rounded-lg px-5 py-3 text-center font-bold" data-mobile-link>Contact</a>
+    <a href="#products" class="block text-slate-600 font-semibold py-2" data-mobile-link>{t('nav.products')}</a>
+    <a href="#services" class="block text-slate-600 font-semibold py-2" data-mobile-link>{t('nav.services')}</a>
+    <a href="#about" class="block text-slate-600 font-semibold py-2" data-mobile-link>{t('nav.about')}</a>
+    <a href="#contact" class="block bg-deep-blue text-white rounded-lg px-5 py-3 text-center font-bold" data-mobile-link>{t('nav.contact')}</a>
+    <a href={switchHref} class="block text-center text-sm font-bold text-slate-500 border border-slate-200 rounded-lg px-5 py-3" data-mobile-link>{lang === 'ko' ? 'English' : '한국어'}</a>
   </div>
 </header>
 

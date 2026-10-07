@@ -1,49 +1,26 @@
 ---
-// @TASK Why Us 섹션 - 경험/실적 하이라이트
+// @TASK Why Us 섹션 - 다국어
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
 
-const highlights = [
-  {
-    icon: 'military_tech',
-    number: '15년+',
-    title: '실무 경력',
-    description: '대형 SI 프로젝트 구축부터 운영까지 풍부한 현장 경험'
-  },
-  {
-    icon: 'rocket_launch',
-    number: '다수',
-    title: 'PoC 성공 경험',
-    description: '대기업 혁신조직에서 검증된 신기술 도입 및 프로토타입 개발'
-  },
-  {
-    icon: 'code_blocks',
-    number: '자체',
-    title: '플랫폼 개발',
-    description: '직접 설계하고 구축한 플랫폼 운영 노하우 보유'
-  },
-  {
-    icon: 'handshake',
-    number: '100%',
-    title: '고객 성공 중심',
-    description: '고객이 원하는 결과를 끝까지 책임지는 파트너십'
-  }
-];
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 ---
 
 <section id="why-us" class="py-24 bg-white">
   <div class="max-w-7xl mx-auto px-6">
     <!-- Section Header -->
     <div class="text-center mb-16">
-      <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-3">Why Choose Us</h2>
-      <h3 class="text-4xl font-bold text-navy mb-6">왜 InsightFlo인가요?</h3>
+      <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-3">{t('whyus.eyebrow')}</h2>
+      <h3 class="text-4xl font-bold text-navy mb-6">{t('whyus.heading')}</h3>
       <p class="text-xl text-slate-600 max-w-3xl mx-auto">
-        오랜 현장 경험과 검증된 기술력으로<br class="hidden md:block" />
-        고객의 비즈니스 성공을 함께 만들어갑니다.
+        {t('whyus.sub')[0]}<br class="hidden md:block" />
+        {t('whyus.sub')[1]}
       </p>
     </div>
 
     <!-- Highlights Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      {highlights.map((item) => (
+      {t('whyus.items').map((item: { icon: string; number: string; title: string; description: string }) => (
         <div class="text-center p-8 rounded-2xl bg-slate-50 hover:bg-blue-50 transition-colors group">
           <div class="w-16 h-16 mx-auto bg-white rounded-2xl flex items-center justify-center text-deep-blue mb-6 shadow-sm group-hover:shadow-md transition-shadow">
             <span class="material-symbols-outlined text-3xl">{item.icon}</span>

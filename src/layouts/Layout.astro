@@ -1,10 +1,10 @@
 ---
-// @TASK P1-T3 - Layout 통합 (Header + Footer)
-// @SPEC docs/planning/05-design-system.md
+// @TASK P1-T3 - Layout 통합 (Header + Footer) + 다국어 (ko/en, hreflang)
 
 import '../styles/global.css';
 import Header from '../components/common/Header.astro';
 import Footer from '../components/common/Footer.astro';
+import { defaultLang, type Lang } from '../i18n/ui';
 
 interface Props {
   title: string;
@@ -15,20 +15,36 @@ const {
   title,
   description = 'AI 기반 서비스 개발 전문가 - InsightFlo',
 } = Astro.props;
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+
+// 현재 페이지의 한국어/영어 대체 주소 (hreflang)
+const site = Astro.site ?? 'https://insightflo.co';
+const base = (Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/').replace(/\/?$/, '/');
+const koHref = new URL(base, site).href;
+const enHref = new URL('/en' + (base === '/' ? '/' : base), site).href;
 ---
 
 <!doctype html>
-<html lang="ko" class="scroll-smooth">
+<html lang={lang} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title}</title>
 
+    <!-- hreflang -->
+    <link rel="alternate" hreflang="ko" href={koHref} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="x-default" href={koHref} />
+
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'ko_KR'} />
+    <meta property="og:locale:alternate" content={lang === 'en' ? 'ko_KR' : 'en_US'} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 

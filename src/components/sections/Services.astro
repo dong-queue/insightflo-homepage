@@ -1,13 +1,17 @@
 ---
-// @TASK 디자인 리뉴얼 - Services
+// @TASK 다국어 Services
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 ---
 
 <section id="services" class="py-24 bg-slate-50">
   <div class="max-w-7xl mx-auto px-6">
     <!-- Section Header -->
     <div class="text-center mb-20">
-      <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-3">Our Expertise</h2>
-      <h3 class="text-4xl font-bold text-navy">핵심 서비스 영역</h3>
+      <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-3">{t('services.eyebrow')}</h2>
+      <h3 class="text-4xl font-bold text-navy">{t('services.heading')}</h3>
     </div>
 
     <!-- Service Cards -->
@@ -17,23 +21,17 @@
         <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-deep-blue mb-8">
           <span class="material-symbols-outlined text-4xl">neurology</span>
         </div>
-        <h4 class="text-2xl font-bold text-navy mb-4">AI Consulting</h4>
+        <h4 class="text-2xl font-bold text-navy mb-4">{t('services.ai.title')}</h4>
         <p class="text-slate-600 mb-10 leading-relaxed">
-          최신 LLM 기술과 RAG 아키텍처를 기반으로 기업 고유의 데이터를 활용한 지능형 솔루션 도입 전략을 제시합니다.
+          {t('services.ai.desc')}
         </p>
         <ul class="space-y-4">
-          <li class="flex items-center gap-3 text-slate-700">
-            <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
-            <span class="font-medium">RAG (검색 증강 생성) 구축</span>
-          </li>
-          <li class="flex items-center gap-3 text-slate-700">
-            <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
-            <span class="font-medium">LLM 파인튜닝 및 맞춤형 에이전트</span>
-          </li>
-          <li class="flex items-center gap-3 text-slate-700">
-            <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
-            <span class="font-medium">업무 프로세스 자동화 (Workflow Automation)</span>
-          </li>
+          {t('services.ai.features').map((feature: string) => (
+            <li class="flex items-center gap-3 text-slate-700">
+              <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
+              <span class="font-medium">{feature}</span>
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -42,23 +40,17 @@
         <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-deep-blue mb-8">
           <span class="material-symbols-outlined text-4xl">terminal</span>
         </div>
-        <h4 class="text-2xl font-bold text-navy mb-4">System Development</h4>
+        <h4 class="text-2xl font-bold text-navy mb-4">{t('services.sys.title')}</h4>
         <p class="text-slate-600 mb-10 leading-relaxed">
-          안정적인 아키텍처와 최신 스택을 사용하여 비즈니스 로직에 최적화된 고성능 엔터프라이즈 시스템을 개발합니다.
+          {t('services.sys.desc')}
         </p>
         <ul class="space-y-4">
-          <li class="flex items-center gap-3 text-slate-700">
-            <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
-            <span class="font-medium">Modern Web & App 개발</span>
-          </li>
-          <li class="flex items-center gap-3 text-slate-700">
-            <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
-            <span class="font-medium">시스템 통합 (SI) 및 API 설계</span>
-          </li>
-          <li class="flex items-center gap-3 text-slate-700">
-            <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
-            <span class="font-medium">데이터 파이프라인 및 백엔드 고도화</span>
-          </li>
+          {t('services.sys.features').map((feature: string) => (
+            <li class="flex items-center gap-3 text-slate-700">
+              <span class="material-symbols-outlined text-blue-500 text-xl">check_circle</span>
+              <span class="font-medium">{feature}</span>
+            </li>
+          ))}
         </ul>
       </div>
     </div>

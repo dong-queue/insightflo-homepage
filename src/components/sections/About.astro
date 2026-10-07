@@ -1,5 +1,9 @@
 ---
-// @TASK 디자인 리뉴얼 - About
+// @TASK 다국어 About
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 ---
 
 <section id="about" class="py-24 bg-navy text-white overflow-hidden relative">
@@ -8,68 +12,42 @@
   <div class="max-w-5xl mx-auto px-6 relative z-10">
     <!-- Vision & Mission -->
     <div class="mb-16">
-      <span class="text-blue-400 font-bold tracking-widest text-sm uppercase mb-4 block">Why InsightFlo</span>
+      <span class="text-blue-400 font-bold tracking-widest text-sm uppercase mb-4 block">{t('about.eyebrow')}</span>
       <h2 class="text-3xl md:text-5xl font-bold leading-tight mb-8">
-        도메인 전문성 + AI 기술력<br/>= 확실한 비즈니스 성과
+        {t('about.heading')[0]}<br/>{t('about.heading')[1]}
       </h2>
       <p class="text-xl text-slate-300 leading-relaxed max-w-3xl mb-6">
-        인사이트플로는 2025년 6월 서울에서 문을 연 AI 소프트웨어 스타트업입니다.<br class="hidden md:block"/>
-        자체 제품을 직접 만들고 운영하며 얻은 자동화 노하우를 기업 프로젝트에 씁니다.
+        {t('about.p1').split('\n').map((line: string, i: number) => (<>{i > 0 && <br class="hidden md:block" />}{line}</>))}
       </p>
       <p class="text-slate-400 leading-relaxed max-w-3xl">
-        AICPA 자격과 회계 SI 구축 경험, 물류 신기술 POC 실무를 바탕으로<br class="hidden md:block"/>
-        고객의 비즈니스를 깊이 이해하고 AI로 실질적 문제를 해결합니다.
+        {t('about.p2').split('\n').map((line: string, i: number) => (<>{i > 0 && <br class="hidden md:block" />}{line}</>))}
       </p>
     </div>
 
     <!-- Expertise -->
     <div class="grid md:grid-cols-3 gap-6 mb-16">
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <span class="material-symbols-outlined text-3xl text-blue-400 mb-4 block">account_balance</span>
-        <h4 class="text-lg font-bold mb-2">회계·재무</h4>
-        <p class="text-slate-400 text-sm">AICPA · ERP/회계시스템 구축 · 재무 데이터 분석</p>
-      </div>
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <span class="material-symbols-outlined text-3xl text-blue-400 mb-4 block">local_shipping</span>
-        <h4 class="text-lg font-bold mb-2">물류·SCM</h4>
-        <p class="text-slate-400 text-sm">물류 자동화 POC · 수출입 프로세스 · 재고 최적화</p>
-      </div>
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <span class="material-symbols-outlined text-3xl text-blue-400 mb-4 block">gavel</span>
-        <h4 class="text-lg font-bold mb-2">관세·무역</h4>
-        <p class="text-slate-400 text-sm">AI 신고서 생성 · 인증/허가 자동화 · 규정 검토</p>
-      </div>
+      {t('about.domains').map((domain: { icon: string; title: string; desc: string }) => (
+        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+          <span class="material-symbols-outlined text-3xl text-blue-400 mb-4 block">{domain.icon}</span>
+          <h4 class="text-lg font-bold mb-2">{domain.title}</h4>
+          <p class="text-slate-400 text-sm">{domain.desc}</p>
+        </div>
+      ))}
     </div>
 
     <!-- Approach -->
     <div class="grid md:grid-cols-3 gap-12 pt-12 border-t border-white/10">
-      <div>
-        <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
-          <span class="material-symbols-outlined text-blue-400">bolt</span>
-          Fast Delivery
-        </h4>
-        <p class="text-slate-400 text-sm leading-relaxed">
-          검증된 AI 도구(Claude, GPT, LangChain 등)를 효율적으로 조합해 2주 내 MVP를 제공합니다.
-        </p>
-      </div>
-      <div>
-        <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
-          <span class="material-symbols-outlined text-blue-400">savings</span>
-          Cost Effective
-        </h4>
-        <p class="text-slate-400 text-sm leading-relaxed">
-          처음부터 만들지 않습니다. 기존 솔루션을 활용해 개발 비용을 최대 50% 절감합니다.
-        </p>
-      </div>
-      <div>
-        <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
-          <span class="material-symbols-outlined text-blue-400">verified</span>
-          Proven Results
-        </h4>
-        <p class="text-slate-400 text-sm leading-relaxed">
-          도메인을 이해하는 개발자가 만들기에 현업에서 바로 쓸 수 있는 실용적 결과물을 보장합니다.
-        </p>
-      </div>
+      {t('about.approach').map((item: { icon: string; title: string; desc: string }) => (
+        <div>
+          <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-400">{item.icon}</span>
+            {item.title}
+          </h4>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            {item.desc}
+          </p>
+        </div>
+      ))}
     </div>
   </div>
 </section>

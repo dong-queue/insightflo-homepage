@@ -1,6 +1,9 @@
 ---
-// @TASK 디자인 리뉴얼 - Contact
-// @SPEC design/code.html#contact
+// @TASK 다국어 Contact
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const t = useTranslations(lang);
 
 const email = "teo@insightflo.co";
 ---
@@ -13,12 +16,12 @@ const email = "teo@insightflo.co";
     </div>
 
     <!-- Title -->
-    <h2 class="text-4xl md:text-5xl font-bold text-navy mb-6">문의하기</h2>
+    <h2 class="text-4xl md:text-5xl font-bold text-navy mb-6">{t('contact.heading')}</h2>
 
     <!-- Description -->
     <p class="text-xl text-slate-600 mb-12">
-      귀사의 비즈니스에 AI를 더하고 싶으신가요?<br/>
-      전문 엔지니어와 직접 상담을 시작해 보세요.
+      {t('contact.lines')[0]}<br/>
+      {t('contact.lines')[1]}
     </p>
 
     <!-- Email & CTA -->
@@ -28,7 +31,7 @@ const email = "teo@insightflo.co";
       </a>
       <a href={`mailto:${email}`} class="inline-flex items-center gap-3 px-12 py-5 bg-deep-blue text-white rounded-xl font-bold text-lg hover:bg-navy transition-all shadow-xl shadow-blue-900/10">
         <span class="material-symbols-outlined">send</span>
-        이메일 보내기
+        {t('contact.cta')}
       </a>
     </div>
   </div>
