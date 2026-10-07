@@ -1,5 +1,5 @@
 ---
-// Products - 자체 AI 제품 섹션 (제품 중심 리브랜딩)
+// Products - 자체 AI 제품 섹션 (플랫폼 중심 구성)
 ---
 
 <section id="products" class="py-24 bg-white">
@@ -13,7 +13,41 @@
       </p>
     </div>
 
-    <!-- Product Cards -->
+    <!-- 메인: 워크플로우 자동화 플랫폼 -->
+    <div class="bg-gradient-to-br from-slate-50 to-blue-50/50 p-10 md:p-14 rounded-3xl border border-blue-100 shadow-sm mb-8">
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-deep-blue shrink-0">
+          <span class="material-symbols-outlined text-4xl">account_tree</span>
+        </div>
+        <div>
+          <span class="px-3 py-1 bg-deep-blue text-white rounded-full text-xs font-bold">메인 제품</span>
+          <span class="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-bold ml-2">내부 운영 중</span>
+        </div>
+      </div>
+      <h4 class="text-2xl md:text-3xl font-bold text-navy mb-4">비주얼 워크플로우 자동화 플랫폼</h4>
+      <p class="text-slate-600 mb-8 leading-relaxed max-w-3xl">
+        업무 흐름을 화면에서 끊어 연결하면 AI 에이전트가 실행합니다. 실행 상태 추적, 실패 시 재시도·재개, 산출물 검증까지 한곳에서 관리합니다.
+      </p>
+      <ul class="grid sm:grid-cols-3 gap-4 mb-8">
+        <li class="flex items-start gap-3 text-slate-700 bg-white/70 rounded-xl p-4">
+          <span class="material-symbols-outlined text-blue-500 text-xl shrink-0">check_circle</span>
+          <span class="font-medium text-sm">비주얼 그래프 편집기로 워크플로우 구성</span>
+        </li>
+        <li class="flex items-start gap-3 text-slate-700 bg-white/70 rounded-xl p-4">
+          <span class="material-symbols-outlined text-blue-500 text-xl shrink-0">check_circle</span>
+          <span class="font-medium text-sm">DAG 실행 엔진 - 재시도·재개·반복 관리</span>
+        </li>
+        <li class="flex items-start gap-3 text-slate-700 bg-white/70 rounded-xl p-4">
+          <span class="material-symbols-outlined text-blue-500 text-xl shrink-0">check_circle</span>
+          <span class="font-medium text-sm">산출물 검증과 Claude·Codex 어댑터</span>
+        </li>
+      </ul>
+      <p class="text-xs text-slate-400 leading-relaxed">
+        * 오픈소스 Paperclip 프로젝트를 기반으로 확장하여 구축했습니다.
+      </p>
+    </div>
+
+    <!-- 서브 제품 2종 -->
     <div class="grid md:grid-cols-2 gap-8">
       <!-- 온보딩 (운영 중) -->
       <div class="bg-white p-10 md:p-14 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-shadow">
