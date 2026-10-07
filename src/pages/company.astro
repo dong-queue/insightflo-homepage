@@ -1,0 +1,83 @@
+---
+// Company Profile (English) - 회사 소개 영문 페이지
+import Layout from '../layouts/Layout.astro';
+
+const companyName = "InsightFlo";
+const companyNameKo = "인사이트플로";
+const founded = "June 16, 2025";
+const city = "Seoul, South Korea";
+const ceoName = "Donggyu Kwak";
+const ceoKo = "곽동규";
+const bizNumber = "820-09-03326";
+const email = "teo@insightflo.co";
+---
+
+<Layout title="Company Profile - InsightFlo" description="InsightFlo company profile: AI software startup in Seoul, Korea building SEO/GEO audit agents and AI-native media services.">
+  <div class="min-h-screen bg-white pt-24 pb-16">
+    <article class="max-w-3xl mx-auto px-6">
+      <h1 class="text-4xl font-bold text-navy mb-4">Company Profile</h1>
+      <p class="text-slate-500 mb-12">InsightFlo ({companyNameKo}) - AI software startup, Seoul, South Korea</p>
+
+      <div class="prose prose-slate max-w-none space-y-8">
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Overview</h2>
+          <p class="text-slate-600 leading-relaxed">
+            InsightFlo is an AI software company founded in Seoul in June 2025. We build
+            AI agent products that automate knowledge work: search-engine and generative-AI
+            visibility auditing, and fully automated AI-native media operations. Our stack
+            is built on modern LLMs including Anthropic Claude, OpenAI GPT, and open models,
+            with RAG pipelines and agentic workflows.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Company Information</h2>
+          <ul class="text-slate-600 mt-4 space-y-2">
+            <li><strong>Legal name:</strong> InsightFlo ({companyNameKo})</li>
+            <li><strong>Founder &amp; CEO:</strong> {ceoName} ({ceoKo}) - <a href="https://www.linkedin.com/in/dongkyookwak" class="text-blue-600 hover:underline">LinkedIn</a></li>
+            <li><strong>Founded:</strong> {founded}</li>
+            <li><strong>Location:</strong> {city}</li>
+            <li><strong>Business registration no.:</strong> {bizNumber}</li>
+            <li><strong>Industry:</strong> Software development (AI / Machine Learning)</li>
+            <li><strong>Website:</strong> <a href="https://insightflo.co" class="text-blue-600 hover:underline">insightflo.co</a></li>
+            <li><strong>Contact:</strong> {email}</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Products</h2>
+          <div class="mt-4 space-y-6">
+            <div>
+              <p class="text-slate-700 font-semibold">SEO/GEO Audit Agent <span class="text-slate-400 font-normal">(in development)</span></p>
+              <p class="text-slate-600 mt-2 leading-relaxed">
+                An AI agent that crawls a company's website, diagnoses search-engine and
+                generative-AI visibility issues (GA4/Search Console data, site structure,
+                content, schema), and auto-generates prioritized fix reports. Built on
+                Claude-powered agentic workflows.
+              </p>
+            </div>
+            <div>
+              <p class="text-slate-700 font-semibold">온보딩 (Manual Onboarding) <span class="text-slate-400 font-normal">- live service</span></p>
+              <p class="text-slate-600 mt-2 leading-relaxed">
+                An AI-native daily news briefing service (<a href="https://mock.co.kr" class="text-blue-600 hover:underline">mock.co.kr</a>)
+                whose content pipeline - research, drafting, publishing, and distribution -
+                is automated end-to-end with LLM agents.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-navy mb-4">Technology</h2>
+          <p class="text-slate-600 leading-relaxed">
+            LLM applications (Anthropic Claude, GPT), RAG architecture, agentic workflow
+            automation, web crawling and analytics integration (GA4, Google Search Console),
+            TypeScript/Vue and Python/FastAPI development, AWS and Cloudflare infrastructure.
+          </p>
+        </section>
+
+      </div>
+    </article>
+  </div>
+</Layout>
