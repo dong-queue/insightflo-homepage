@@ -24,6 +24,7 @@ import { ui } from '../../i18n/ui';
 export const prerender = false;
 
 const { env } = Astro.locals.runtime;
+const emailOn = Boolean(env.EMAIL && env.MAIL_FROM && env.MAIL_TO);
 const auth = await checkAdmin(Astro.request, env, import.meta.env.DEV);
 if (!auth.ok) {
   const message =
@@ -136,7 +137,7 @@ const excerpt = (value: string, max = 90) => {
                 <dt>언어</dt>
                 <dd>{item.lang === 'en' ? '영어' : '한국어'}{item.page && ` (${item.page})`}</dd>
                 <dt>알림</dt>
-                <dd>텔레그램 {NOTIFY_LABEL[item.telegram_status] ?? item.telegram_status}, 메일 {NOTIFY_LABEL[item.email_status] ?? item.email_status}</dd>
+                <dd>텔레그램 {NOTIFY_LABEL[item.telegram_status] ?? item.telegram_status}{emailOn && `, 메일 ${NOTIFY_LABEL[item.email_status] ?? item.email_status}`}</dd>
               </dl>
 
               <div class="space-y-6">

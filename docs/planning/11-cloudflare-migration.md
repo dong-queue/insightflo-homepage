@@ -1,6 +1,20 @@
 # 11. Cloudflare 전환 체크리스트
 
-상담 신청서와 문의 관리 화면을 운영에 올리는 순서입니다. 코드는 브랜치 `feature/cloudflare-consult`에 있고 로컬 검증을 마쳤습니다.
+상담 신청서와 문의 관리 화면을 운영에 올리는 순서입니다. 코드는 브랜치 `feature/cloudflare-consult`에 있습니다.
+
+## 진행 상황 (2026-10-30)
+
+| 단계 | 상태 |
+|---|---|
+| 1. 메일 알림 | B(텔레그램만)로 결정 |
+| 2. DNS 이전 | 아직. DNSSEC는 꺼져 있습니다(`dig DS insightflo.co`가 비어 있음) |
+| 3.1 D1 | 만듦. `insightflo-inquiries`, APAC, 표 생성까지 |
+| 3.2 Turnstile | 만듦. 위젯 `insightflo-consult`, Site Key `0x4AAAAAAFsX9oersep1F08R`, 허용 주소 insightflo.co와 workers.dev |
+| 3.3 텔레그램 | 아직 |
+| 3.5 Access | 아직 |
+| 3.6 GitHub 설정 | 일부. 변수 `PUBLIC_TURNSTILE_SITE_KEY`와 비밀 값 `CLOUDFLARE_ACCOUNT_ID`는 넣었고, `CLOUDFLARE_API_TOKEN`은 아직 |
+| 4. workers.dev 확인 | 마침. `https://insightflo-homepage.insightflo.workers.dev`에서 실제 브라우저로 신청 1건이 Turnstile을 통과해 저장되는 것을 보고 지웠습니다 |
+| 5. 전환 | 아직 |
 
 이 문서의 5단계를 마치기 전에는 main에 합치지 않습니다. main에 합치면 GitHub Pages 배포 워크플로가 사라지고 Cloudflare 배포가 돌기 때문입니다. 그동안 insightflo.co는 GitHub Pages가 마지막 배포본을 계속 내보냅니다.
 
@@ -13,12 +27,14 @@ GitHub Pages는 정적 파일만 내보내므로 신청서를 받아 저장할 �
 - **[대표]**: 대시보드나 외부 서비스에서 대표만 할 수 있는 일
 - **[에이전트]**: 이 컴퓨터에 로그인된 wrangler로 에이전트가 대신 할 수 있는 일. wrangler는 insightflo@gmail.com 계정으로 로그인되어 있고 Workers, D1, Email Routing, Email Sending, Turnstile 쓰기 권한이 있습니다(2026-10-30 `npx wrangler whoami`).
 
-## 1. 먼저 정할 것: 메일 알림 [대표]
+## 1. 메일 알림 [결정: B, 2026-10-30]
+
+새 신청 알림은 텔레그램으로만 받습니다. `wrangler.jsonc`에 `send_email` 바인딩과 `MAIL_FROM`, `MAIL_TO`가 없으므로 메일은 보내지 않고, 관리 화면에도 메일 결과를 보이지 않습니다. 나중에 메일 알림을 켜는 방법은 8절에 있습니다.
 
 | 선택 | 비용 | 하는 일 |
 |---|---|---|
 | A. 메일과 텔레그램 | Workers Paid 월 5달러 | 하위 도메인 `notify.insightflo.co`를 Email Sending에 등록하고 `consult@notify.insightflo.co`에서 보냅니다 |
-| B. 텔레그램만 | 무료 | `wrangler.jsonc`의 `MAIL_FROM`을 빈 값으로 둡니다. 관리 화면에 메일 알림이 "보내지 않음"으로 남습니다. 개인정보처리방침 4절 Cloudflare 이용 목적에서 "알림 메일 발송"을 지웁니다 |
+| B. 텔레그램만 (선택함) | 무료 | 메일 바인딩과 변수를 두지 않습니다. 개인정보처리방침 4절 Cloudflare 이용 목적에 "알림 메일 발송"을 넣지 않습니다 |
 
 근거(Cloudflare Email Service 문서, 2026-10-30 확인):
 
@@ -60,7 +76,7 @@ GitHub Pages는 정적 파일만 내보내므로 신청서를 받아 저장할 �
 npx wrangler d1 create insightflo-inquiries --location apac
 ```
 
-출력된 `database_id`를 `wrangler.jsonc`의 `d1_databases[0].database_id`에 넣고 표를 만듭니다.
+출력된 `database_id`를 `wrangler.jsonc`의 `d1_databases[0].database_id`에 넣고 표를 만듭니다. 2026-10-30에 만든 값은 `8803a34f-bd00-43ca-a6d7-e8f863c71a23`이고 이미 들어 있습니다.
 
 ```bash
 npm run db:migrate:remote
@@ -76,6 +92,8 @@ npx wrangler turnstile widget create insightflo-consult --mode managed --domain 
 
 wrangler 4.156.0의 alpha 명령입니다. 대시보드 Turnstile > Add widget에서 같은 값으로 만들어도 됩니다. workers.dev 주소는 4단계 첫 배포 때 나옵니다. 처음에는 `insightflo.co`만 넣어 만들고, 첫 배포 뒤 `npx wrangler turnstile widget update <Site Key> --domain insightflo.co --domain <workers.dev 주소>`로 두 주소를 다시 지정합니다.
 
+2026-10-30에 만든 위젯: 이름 `insightflo-consult`, Site Key `0x4AAAAAAFsX9oersep1F08R`, 허용 주소 `insightflo.co`, `insightflo-homepage.insightflo.workers.dev`. Secret Key는 Worker 비밀 값 `TURNSTILE_SECRET_KEY`로만 넣었고 파일에는 적지 않았습니다. 다시 넣을 때는 `npx wrangler turnstile widget get <Site Key> --json`의 `secret` 값을 화면에 띄우지 말고 `wrangler secret put`으로 바로 넘깁니다.
+
 1. `insightflo.co`를 넣으면 www를 포함한 하위 도메인이 함께 허용됩니다. workers.dev 주소는 4단계 시험용입니다.
 2. Site Key는 GitHub 저장소 Settings > Secrets and variables > Actions > **Variables**에 `PUBLIC_TURNSTILE_SITE_KEY`로 넣습니다. 페이지에 그대로 나가는 공개 값입니다. 로컬에서 배포할 때도 이 값이 필요합니다.
 3. Secret Key는 4단계에서 `TURNSTILE_SECRET_KEY`로 넣습니다.
@@ -90,14 +108,14 @@ wrangler 4.156.0의 alpha 명령입니다. 대시보드 Turnstile > Add widget�
 
 알림에는 접수 번호, 한 달 처리 건수, 관리 화면 링크만 담습니다. 신청자가 적은 내용은 텔레그램으로 보내지 않습니다(`src/server/notify.ts`, 개인정보처리방침 4절).
 
-### 3.4 메일 [대표, 1번에서 A를 골랐을 때만]
+### 3.4 메일 [하지 않음. 1번에서 B를 골랐습니다. 메일 알림을 켤 때 참고]
 
 1. Workers Paid를 구독합니다.
 2. 대시보드 > Compute > Email Service > Email Routing > **Destination Addresses**에서 `teo@insightflo.co`를 추가하고, 받은 확인 메일에서 Verify email address를 누릅니다. 확인된 주소로 보내는 메일은 월 발송 한도에 들어가지 않습니다. 이 화면의 **Onboard Domain**은 누르지 않습니다. 루트 MX가 바뀝니다. 주소를 추가하려는데 도메인 등록을 먼저 요구하면 이 단계는 건너뜁니다. 알림 메일은 Workers Paid에 포함된 월 3,000건 안에서 나갑니다.
 3. Compute > Email Service > Email Sending > **Onboard Domain**에서 `notify.insightflo.co`를 고릅니다. 반송 처리용 MX와 SPF(`cf-bounce.notify.insightflo.co`), DKIM(`cf-bounce._domainkey.notify.insightflo.co`), DMARC(`_dmarc.notify.insightflo.co`)가 추가됩니다.
 4. 루트 레코드가 그대로인지 확인합니다. `dig MX insightflo.co +short`는 Daum 서버, `dig TXT _dmarc.insightflo.co +short`는 기존 값이어야 합니다.
 
-`wrangler.jsonc`의 `MAIL_FROM`은 이미 `consult@notify.insightflo.co`입니다. B를 골랐다면 `""`로 바꿉니다. B에서 배포가 `send_email` 바인딩 때문에 실패하면 그 블록을 지웁니다. 코드는 바인딩이 없으면 메일을 건너뜁니다.
+이어서 8절 "메일 알림을 켜려면"을 따릅니다.
 
 ### 3.5 Cloudflare Access(관리 화면 로그인) [대표]
 
@@ -136,12 +154,11 @@ npx wrangler secret put TELEGRAM_CHAT_ID
 
 `npm run deploy`는 빌드, D1 마이그레이션, 배포를 차례로 합니다. Turnstile 비밀 값을 넣기 전에는 신청 API가 503을 돌려줍니다.
 
-`https://insightflo-homepage.<계정 서브도메인>.workers.dev`에서 확인합니다.
+`https://insightflo-homepage.insightflo.workers.dev`에서 확인합니다. 2026-10-30에 텔레그램을 뺀 항목을 모두 확인했습니다.
 
 - [ ] `/`, `/en/`, `/company/`, `/privacy/`가 열리고 테마·언어 전환이 됩니다
 - [ ] 신청서를 한 건 보내면 접수 영수증이 나옵니다
 - [ ] 텔레그램 알림이 옵니다(접수 번호, 한 달 처리 건수, 관리 화면 링크만)
-- [ ] (A를 골랐다면) 메일이 옵니다. 보낸 사람은 `consult@notify.insightflo.co`이고, 답장하면 받는 사람이 신청자 주소입니다
 - [ ] 저장과 알림 결과를 봅니다:
   `npx wrangler d1 execute DB --remote --command "select id, status, telegram_status, email_status from inquiries order by created_at desc limit 5"`
 - [ ] `/admin/inquiries`가 닫혀 있습니다(Access 값을 넣었으면 403, 아직이면 503)
@@ -201,3 +218,18 @@ D1에 쌓인 신청은 그대로 남습니다.
 - 알림이 실패해도 신청은 저장됩니다. 관리 화면의 각 신청에 텔레그램과 메일 결과(보냄, 실패, 보내지 않음)가 보입니다.
 - 보관 기간을 바꾸면 `src/server/inquiries.ts`의 `RETENTION_DAYS`와 개인정보처리방침 2절을 같이 고칩니다.
 - 텔레그램 알림에 신청 내용을 더 담으려면 개인정보처리방침 4절에 텔레그램(Telegram Messenger Inc.)을 국외 이전 받는 자로 적어야 합니다.
+
+### 메일 알림을 켜려면
+
+1. 3.4를 따라 Workers Paid를 구독하고 `notify.insightflo.co`를 Email Sending에 등록합니다. insightflo.co 루트에는 Email Routing을 켜지 않습니다.
+2. `wrangler.jsonc`에 다음을 넣습니다.
+
+   ```jsonc
+   "send_email": [{ "name": "EMAIL", "destination_address": "teo@insightflo.co" }],
+   // vars 안에
+   "MAIL_FROM": "consult@notify.insightflo.co",
+   "MAIL_TO": "teo@insightflo.co",
+   ```
+
+3. 개인정보처리방침 4절 Cloudflare 이용 목적에 "알림 메일 발송"을 더하고, 알림을 텔레그램으로 받는다는 문단을 고칩니다.
+4. 배포한 뒤 시험 신청 한 건으로 메일이 오는지, 답장 주소가 신청자인지 확인합니다. 관리 화면에 메일 결과가 다시 보입니다.

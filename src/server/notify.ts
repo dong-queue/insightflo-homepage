@@ -1,4 +1,5 @@
-// 새 문의 알림: 텔레그램과 메일. 저장이 먼저이고, 알림은 실패해도 문의는 남습니다.
+// 새 문의 알림: 텔레그램, 그리고 send_email 바인딩이 있을 때만 메일(지금은 꺼 둠).
+// 저장이 먼저이고, 알림은 실패해도 문의는 남습니다.
 // 결과(sent/failed/skipped)는 문의마다 기록되어 관리 화면에 보입니다.
 import type { SiteEnv } from './cf-types';
 import { setNotifyStatus, type NewInquiry, type NotifyStatus } from './inquiries';

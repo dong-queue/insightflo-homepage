@@ -24,8 +24,8 @@
     {
       "binding": "DB",
       "database_name": "insightflo-inquiries",
-      // wrangler d1 create insightflo-inquiries --location apac 결과로 바꿉니다.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // 2026-10-30 생성(wrangler d1 create insightflo-inquiries --location apac)
+      "database_id": "8803a34f-bd00-43ca-a6d7-e8f863c71a23",
       "migrations_dir": "migrations"
     }
   ],
@@ -35,18 +35,13 @@
     { "name": "CONSULT_LIMITER", "namespace_id": "4101", "simple": { "limit": 5, "period": 60 } }
   ],
 
-  // Cloudflare Email Service. 확인된 수신 주소(대표 메일)로만 보낼 수 있게 묶어 둡니다.
-  // 발신 도메인 notify.insightflo.co를 Email Sending에 등록해야 보낼 수 있습니다(Workers Paid).
-  // 루트 도메인에 Email Routing을 켜면 MX가 Cloudflare로 바뀌어 Daum 메일을 못 받으므로 켜지 않습니다.
-  // 메일 알림을 쓰지 않으면 MAIL_FROM을 빈 값으로 둡니다(알림은 '보내지 않음'으로 기록).
-  "send_email": [{ "name": "EMAIL", "destination_address": "teo@insightflo.co" }],
+  // 새 신청 알림은 텔레그램만 씁니다(2026-10-30 결정). 메일 알림 코드는 남아 있고, send_email 바인딩과
+  // MAIL_FROM, MAIL_TO를 넣으면 켜집니다. 켜는 방법: docs/planning/11-cloudflare-migration.md 8절.
 
   // 매일 03:00(한국 시간) 보관 기간이 지난 문의를 지웁니다.
   "triggers": { "crons": ["0 18 * * *"] },
 
   "vars": {
-    "MAIL_FROM": "consult@notify.insightflo.co",
-    "MAIL_TO": "teo@insightflo.co",
     // Cloudflare Zero Trust > Access 애플리케이션을 만든 뒤 채웁니다. 비어 있으면 관리 화면이 닫혀 있습니다.
     // ACCESS_TEAM_DOMAIN 형식: https://<팀 이름>.cloudflareaccess.com
     "ACCESS_TEAM_DOMAIN": "",

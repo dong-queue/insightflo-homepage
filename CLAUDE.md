@@ -20,7 +20,7 @@
 | 호스팅 | Cloudflare Workers + Static Assets (`@astrojs/cloudflare` 12, Astro 5용) |
 | 데이터 | Cloudflare D1(문의). 매일 03:00(한국 시간) cron이 1년 지난 문의를 지웁니다 |
 | 보호 | Turnstile(신청서), Rate Limiting(IP당 1분 5건), Cloudflare Access(관리 화면) |
-| 알림 | 텔레그램 봇, Cloudflare Email Service |
+| 알림 | 텔레그램 봇. 메일 알림 코드는 있지만 꺼 두었습니다(켜는 방법은 11번 문서 8절) |
 | CI/CD | GitHub Actions → `wrangler deploy` (`.github/workflows/deploy-cloudflare.yml`) |
 
 ## 프로젝트 구조
@@ -45,7 +45,7 @@ insightflo-homepage/
 ├── migrations/              # D1 스키마
 ├── tests/                   # node --test (Access 토큰 검사, 신청서 검사)
 ├── docs/planning/           # 10-content-strategy.md(전략, 숫자 출처, 디자인), 11-cloudflare-migration.md(전환)
-├── wrangler.jsonc           # Worker 설정: D1, 요청 제한, 메일, cron, 환경 변수
+├── wrangler.jsonc           # Worker 설정: D1, 요청 제한, cron, 환경 변수
 └── astro.config.mjs
 ```
 
@@ -79,7 +79,7 @@ npm run deploy    # 빌드 + 원격 D1 마이그레이션 + 배포. 평소에는
 
 ## 상담 신청과 문의 관리
 
-- 흐름: 신청서 → `/api/consult` → D1 저장 → 텔레그램·메일 알림(`waitUntil`, 실패해도 신청은 남음) → `/admin/inquiries`에서 상태와 메모 관리
+- 흐름: 신청서 → `/api/consult` → D1 저장 → 텔레그램 알림(`waitUntil`, 실패해도 신청은 남음) → `/admin/inquiries`에서 상태와 메모 관리
 - `/api/consult` 검사 순서: 같은 출처(403) → JSON(415) → 32KB(413) → 비밀 값(503) → 요청 제한(429) → Turnstile(400) → 입력 검사(422) → 허니팟(스팸으로 저장, 알림 없음) → 저장
 - 입력 규칙(글자 수, 형식)은 `src/lib/consult-schema.ts` 한 곳에서 고칩니다
 - 관리 화면은 Cloudflare Access 뒤에 있고, Worker도 `cf-access-jwt-assertion` 토큰을 검사합니다. `ACCESS_TEAM_DOMAIN`이나 `ACCESS_AUD`가 비면 503으로 닫힙니다. 우회는 개발 서버(`import.meta.env.DEV`)에서만 됩니다
