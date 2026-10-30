@@ -1,42 +1,88 @@
 ---
-// 개인정보처리방침 페이지
+// 개인정보처리방침: 홈페이지 상담 신청(2026-11-06 추가)과 앱 서비스(위치기반 쿠폰 앱)
+// 상담 신청의 보관 기간은 src/server/inquiries.ts의 RETENTION_DAYS와 같아야 합니다.
 import Layout from '../layouts/Layout.astro';
 
-const effectiveDate = "2026년 4월 8일";
-const companyName = "InsightFlo";
-const companyNameKo = "인사이트플로";
-const ceoName = "곽동규";
-const bizNumber = "820-09-03326";
-const address = "서울특별시 노원구 석계로 18길 8 209호";
-const email = "teo@insightflo.co";
+const effectiveDate = '2026년 11월 6일';
+const previousDate = '2026년 4월 8일';
+const companyName = 'InsightFlo';
+const companyNameKo = '인사이트플로';
+const ceoName = '곽동규';
+const bizNumber = '820-09-03326';
+const address = '서울특별시 노원구 석계로 18길 8 209호';
+const email = 'teo@insightflo.co';
+
+const h2 = 'mb-4 text-2xl font-bold leading-8 tracking-tight';
+const h3 = 'mt-8 mb-3 text-lg font-semibold leading-7';
+
+const processors = [
+  {
+    who: 'Cloudflare, Inc.',
+    where: '미국 (상담 신청 데이터베이스는 아시아·태평양 지역에 두도록 설정)',
+    what: '상담 신청 항목 전체, 보안 확인을 위한 접속 IP와 브라우저 정보',
+    why: '홈페이지 운영, 상담 신청 저장, 보안 확인(Turnstile), 알림 메일 발송',
+    how: '신청서를 보낼 때 암호화된 네트워크로 전송',
+    keep: '상담 신청 보유 기간과 같음',
+    contact: 'privacyquestions@cloudflare.com',
+  },
+];
 ---
 
-<Layout title="개인정보처리방침 | InsightFlo" description="InsightFlo 개인정보처리방침">
+<Layout title="개인정보처리방침 | InsightFlo" description="InsightFlo 개인정보처리방침: 홈페이지 상담 신청과 앱 서비스">
   <div class="pt-32 pb-16 lg:pb-24">
     <article class="mx-auto max-w-3xl px-6 sm:px-8">
       <h1 class="h-display text-4xl sm:text-5xl">개인정보처리방침</h1>
-      <p class="mt-4 mb-12 text-ink-2">시행일: {effectiveDate}</p>
+      <p class="mt-4 text-ink-2">시행일: {effectiveDate} (이전 방침: {previousDate} 시행)</p>
+      <p class="mt-6 mb-12 text-ink-2">
+        {companyNameKo}(이하 "회사")는 홈페이지 상담 신청과 회사가 제공하는 앱(근처 쿠폰 앱)에서 처리하는 개인정보를 아래와 같이 안내합니다.
+      </p>
 
       <div class="space-y-12">
-
         <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">1. 사업자 정보</h2>
+          <h2 class={h2}>1. 사업자 정보</h2>
           <ul class="mt-4 space-y-2 text-ink-2">
             <li><strong>상호:</strong> {companyName} ({companyNameKo})</li>
             <li><strong>대표자:</strong> {ceoName}</li>
             <li><strong>사업자등록번호:</strong> {bizNumber}</li>
             <li><strong>주소:</strong> {address}</li>
             <li><strong>연락처:</strong> {email}</li>
-            <li><strong>개인정보 보호책임자:</strong> {email}</li>
+            <li><strong>개인정보 보호책임자:</strong> {ceoName} ({email})</li>
           </ul>
         </section>
 
-        <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">2. 수집하는 개인정보 항목</h2>
+        <section id="consult">
+          <h2 class={h2}>2. 홈페이지 상담 신청</h2>
+          <p class="text-ink-2">홈페이지 상담 신청서와 상담 메일로 받은 문의에 적용합니다.</p>
+
+          <h3 class={h3}>수집 항목</h3>
+          <ul class="list-disc space-y-1 pl-5 text-ink-2">
+            <li>필수: 이름, 이메일, 맡기고 싶은 업무</li>
+            <li>선택: 회사명, 연락처, 지금 처리하는 방식, 한 달 처리 건수</li>
+            <li>
+              보안 확인 과정에서 처리되는 정보: 접속 IP와 브라우저 정보. 자동 입력 공격을 막는 데에만 쓰이며, 회사는 이 정보를 신청 내용과 함께 저장하지 않습니다.
+            </li>
+          </ul>
+
+          <h3 class={h3}>이용 목적</h3>
+          <p class="text-ink-2">상담 요청 확인과 회신, 상담 일정 조율, 부정 이용 방지</p>
+
+          <h3 class={h3}>보유 및 이용 기간</h3>
           <p class="text-ink-2">
-            본 앱은 로그인 기능이 없으며, 아래 정보를 수집·이용합니다.
+            문의일로부터 1년 동안 보관하고, 기간이 지나면 매일 자동으로 파기합니다. 상담이 계약으로 이어지면 계약 이행과 관계 법령이 정한 기간 동안 따로 보관합니다.
           </p>
-          <div class="mt-4 space-y-4">
+
+          <h3 class={h3}>동의를 거부할 권리</h3>
+          <p class="text-ink-2">
+            개인정보 수집·이용에 동의하지 않을 수 있습니다. 동의하지 않으면 신청서는 보낼 수 없지만, {email}로 메일을 보내 상담을 요청할 수 있습니다.
+          </p>
+        </section>
+
+        <section>
+          <h2 class={h2}>3. 앱 서비스</h2>
+          <p class="text-ink-2">앱은 로그인 기능이 없으며, 아래 정보를 수집·이용합니다.</p>
+
+          <h3 class={h3}>수집 항목</h3>
+          <div class="space-y-4">
             <div>
               <p class="font-semibold">필수 수집 항목</p>
               <ul class="mt-2 list-disc space-y-1 pl-5 text-ink-2">
@@ -56,88 +102,111 @@ const email = "teo@insightflo.co";
               <strong>※ 중요:</strong> 위치정보는 사용자의 단말기(스마트폰) 내에서만 처리되며, 회사 서버로 전송하거나 저장하지 않습니다.
             </p>
           </div>
-        </section>
 
-        <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">3. 개인정보의 수집 및 이용 목적</h2>
-          <ul class="mt-4 list-disc space-y-2 pl-5 text-ink-2">
+          <h3 class={h3}>이용 목적</h3>
+          <ul class="list-disc space-y-2 pl-5 text-ink-2">
             <li>근처 쿠폰 정보 제공 및 지도 기반 위치 서비스 제공</li>
             <li>사용자 위치를 기반으로 한 근거리 쿠폰 검색·표시</li>
             <li>서비스 품질 개선 및 앱 기능 향상</li>
             <li>불법 이용 방지 및 고객 문의 대응</li>
           </ul>
-        </section>
 
-        <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">4. 개인정보의 보유 및 이용 기간</h2>
-          <ul class="mt-4 list-disc space-y-2 pl-5 text-ink-2">
+          <h3 class={h3}>보유 및 이용 기간</h3>
+          <ul class="list-disc space-y-2 pl-5 text-ink-2">
             <li>위치정보: 앱 사용 중 실시간으로 기기 내에서만 활용하며, 별도 저장하지 않습니다.</li>
             <li>기기 정보 및 사용 기록: 서비스 제공 기간 동안 보유하며, 목적 달성 시 지체 없이 파기합니다.</li>
             <li>관계 법령에 따라 보존이 필요한 경우(전자상거래법 등) 해당 기간 동안 보관합니다.</li>
           </ul>
-        </section>
 
-        <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">5. 개인위치정보의 처리</h2>
-          <p class="text-ink-2">
-            본 앱은 위치기반서비스를 제공하나, 개인위치정보를 회사 서버로 전송하지 않습니다.
-          </p>
+          <h3 class={h3}>개인위치정보의 처리</h3>
+          <p class="text-ink-2">앱은 위치기반서비스를 제공하나, 개인위치정보를 회사 서버로 전송하지 않습니다.</p>
           <p class="mt-4 text-ink-2">
             GPS 등 위치정보는 사용자의 단말기에서만 사용되어 근처 쿠폰을 표시하는 데 활용되며, 외부로 유출되지 않습니다.
           </p>
         </section>
 
-        <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">6. 개인정보의 제3자 제공</h2>
+        <section id="processors">
+          <h2 class={h2}>4. 처리 위탁과 국외 이전</h2>
           <p class="text-ink-2">
-            본 앱은 위치정보를 포함한 어떠한 개인정보도 제3자에게 제공하지 않습니다.
+            회사는 홈페이지 상담 신청을 처리하기 위해 아래 업체에 업무를 맡기며, 이 과정에서 개인정보가 국외로 이전됩니다. 국외 이전을 원하지 않으시면 신청서 대신 {email}로 메일을 보내 주십시오.
           </p>
-          <p class="mt-3 text-ink-2">
-            지도 API(카카오맵 등)를 사용할 때 API 제공사가 자체적으로 처리하는 기술적 부분은 제외합니다.
+          <div class="mt-6 space-y-6">
+            {processors.map((p) => (
+              <dl class="grid gap-x-4 gap-y-2 rounded-lg bg-sheet p-5 text-sm leading-6 hairline sm:grid-cols-[7rem_minmax(0,1fr)]">
+                <dt class="font-semibold">받는 자</dt>
+                <dd class="font-semibold">{p.who}</dd>
+                <dt class="text-ink-2">이전 국가</dt>
+                <dd>{p.where}</dd>
+                <dt class="text-ink-2">이전 항목</dt>
+                <dd>{p.what}</dd>
+                <dt class="text-ink-2">이용 목적</dt>
+                <dd>{p.why}</dd>
+                <dt class="text-ink-2">이전 시기·방법</dt>
+                <dd>{p.how}</dd>
+                <dt class="text-ink-2">보유 기간</dt>
+                <dd>{p.keep}</dd>
+                <dt class="text-ink-2">연락처</dt>
+                <dd>{p.contact}</dd>
+              </dl>
+            ))}
+          </div>
+          <p class="mt-6 text-ink-2">
+            상담 신청 알림 메일은 회사 메일함(Daum 메일, 국내 서비스)으로 받습니다. 텔레그램으로도 새 신청 알림을 받지만, 알림에는 접수 번호, 한 달 처리 건수, 관리 화면 링크만 담고 이름, 연락처, 문의 내용 같은 개인정보는 보내지 않습니다.
           </p>
         </section>
 
         <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">7. 정보주체의 권리와 행사 방법</h2>
-          <p class="text-ink-2">사용자는 언제든지 아래 권리를 행사할 수 있습니다.</p>
+          <h2 class={h2}>5. 개인정보의 제3자 제공</h2>
+          <p class="text-ink-2">회사는 위치정보를 포함한 어떠한 개인정보도 제3자에게 제공하지 않습니다.</p>
+          <p class="mt-3 text-ink-2">
+            앱에서 지도 API(카카오맵 등)를 사용할 때 API 제공사가 자체적으로 처리하는 기술적 부분은 제외합니다.
+          </p>
+        </section>
+
+        <section>
+          <h2 class={h2}>6. 정보주체의 권리와 행사 방법</h2>
+          <p class="text-ink-2">이용자는 언제든지 아래 권리를 행사할 수 있습니다.</p>
           <ul class="mt-4 list-disc space-y-2 pl-5 text-ink-2">
             <li>개인정보 열람·정정·삭제 요구</li>
             <li>처리정지 요구</li>
           </ul>
-          <p class="mt-4 text-ink-2">
-            권리 행사 방법: {email}로 이메일 요청 시 지체 없이 조치하겠습니다.
-          </p>
+          <p class="mt-4 text-ink-2">권리 행사 방법: {email}로 이메일 요청 시 지체 없이 조치하겠습니다.</p>
         </section>
 
         <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">8. 개인정보 파기 절차 및 방법</h2>
+          <h2 class={h2}>7. 개인정보 파기 절차 및 방법</h2>
           <p class="text-ink-2">
-            보유 기간이 경과하거나 처리 목적이 달성된 개인정보는 복구·재생 불가능한 방법으로 안전하게 파기합니다.
+            보유 기간이 경과하거나 처리 목적이 달성된 개인정보는 복구·재생 불가능한 방법으로 안전하게 파기합니다. 홈페이지 상담 신청 정보는 보유 기간이 지나면 매일 자동으로 삭제합니다.
           </p>
         </section>
 
         <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">9. 안전성 확보 조치</h2>
+          <h2 class={h2}>8. 안전성 확보 조치</h2>
           <ul class="mt-4 list-disc space-y-2 pl-5 text-ink-2">
-            <li>기술적 조치: 암호화, 접근 권한 관리 등</li>
+            <li>기술적 조치: 전송 구간 암호화, 접근 권한 관리 등</li>
+            <li>상담 신청 정보는 인증을 거친 담당자만 관리 화면에서 열람할 수 있습니다.</li>
             <li>관리적 조치: 내부 관리계획 수립 및 직원 교육</li>
           </ul>
         </section>
 
         <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">10. 아동 개인정보 보호</h2>
+          <h2 class={h2}>9. 아동 개인정보 보호</h2>
           <p class="text-ink-2">
-            본 앱은 만 14세 미만 아동을 대상으로 하지 않습니다. 만 14세 미만 아동으로부터 개인정보를 수집하지 않습니다.
+            앱은 만 14세 미만 아동을 대상으로 하지 않으며, 만 14세 미만 아동으로부터 개인정보를 수집하지 않습니다. 홈페이지 상담 신청은 기업과 기관의 업무 담당자를 대상으로 합니다.
           </p>
         </section>
 
         <section>
-          <h2 class="mb-4 text-2xl font-bold leading-8 tracking-tight">11. 개인정보처리방침 변경</h2>
+          <h2 class={h2}>10. 개인정보처리방침 변경</h2>
           <p class="text-ink-2">
             이 개인정보처리방침을 변경하는 경우, 변경 내용과 시행일을 홈페이지에 공지합니다. (시행 7일 전 공지)
           </p>
+          <h3 class={h3}>변경 이력</h3>
+          <ul class="list-disc space-y-1 pl-5 text-ink-2">
+            <li>{effectiveDate}: 홈페이지 상담 신청, 처리 위탁과 국외 이전 항목 추가</li>
+            <li>{previousDate}: 앱 위치기반서비스 반영</li>
+          </ul>
         </section>
-
       </div>
 
       <div class="mt-16 border-t border-line pt-8">
@@ -146,4 +215,3 @@ const email = "teo@insightflo.co";
     </article>
   </div>
 </Layout>
-

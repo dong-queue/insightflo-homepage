@@ -1,58 +1,207 @@
 ---
-// 마지막 행동: 상담 메일(제목·본문 양식 포함), 주소 복사, 위험 감소 문구
+// 마지막 행동: 상담 신청서(저장 + 알림), 메일 대안, 위험 감소 문구
+// 서버 처리: src/pages/api/consult.ts / 필드 규칙: src/lib/consult-schema.ts
 import Icon from '../common/Icon.astro';
 import { useTranslations, links, defaultLang, type Lang } from '../../i18n/ui';
+import { LIMITS, VOLUMES } from '../../lib/consult-schema';
 
 const lang = (Astro.currentLocale as Lang) ?? defaultLang;
 const t = useTranslations(lang);
+const f = t('contact.form');
+const done = t('contact.done');
 const email = links.email;
 const mailto = `mailto:${email}?subject=${encodeURIComponent(t('contact.mailSubject'))}&body=${encodeURIComponent(t('contact.mailBody'))}`;
+const privacyHref = '/privacy/#consult';
+
+// Turnstile 사이트 키는 공개 값입니다. dev 서버에서만 Cloudflare 테스트 키(항상 통과)를 씁니다.
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
+if (!siteKey) {
+  throw new Error('PUBLIC_TURNSTILE_SITE_KEY가 비어 있습니다. 운영 빌드에는 Cloudflare Turnstile 사이트 키가 필요합니다.');
+}
+
+const messages = { errors: f.errors, submit: f.submit, sending: f.sending };
+const consentItems: [string, string][] = f.consentItems;
 ---
 
 <section id="contact" class="pb-16 lg:pb-24" aria-labelledby="contact-title">
   <div class="mx-auto max-w-page px-6 sm:px-8">
     <div class="rounded-2xl bg-sheet p-8 hairline sm:p-12 lg:p-16">
-      <h2 id="contact-title" class="h-display max-w-3xl text-4xl sm:text-5xl">{t('contact.title')}</h2>
-      <p class="t-lead mt-6 max-w-measure">{t('contact.sub')}</p>
+      <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-5">
+          <h2 id="contact-title" class="h-display text-4xl sm:text-5xl">{t('contact.title')}</h2>
+          <p class="t-lead mt-6">{t('contact.sub')}</p>
 
-      <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-        <a class="btn btn-primary" href={mailto}>
-          <Icon name="mail" />
-          {t('contact.cta')}
-        </a>
-        <div class="flex flex-wrap items-center gap-3">
-          <span class="sr-only">{t('contact.emailLabel')}</span>
-          <span class="select-all text-lg font-semibold">{email}</span>
-          <button
-            type="button"
-            class="btn btn-ghost btn-sm"
-            data-copy={email}
-            data-copied={t('contact.copied')}
-            data-fail={t('contact.copyFail')}
-            hidden
+          <ul class="mt-10 space-y-3 text-ink-2" role="list">
+            <li class="flex gap-3">
+              <Icon name="check" size={20} class="mt-0.5 shrink-0 text-ink" />
+              <span>{t('contact.assure')}</span>
+            </li>
+            <li class="flex gap-3">
+              <Icon name="check" size={20} class="mt-0.5 shrink-0 text-ink" />
+              <span>{t('contact.partner')}</span>
+            </li>
+          </ul>
+
+          <div class="mt-10 border-t border-line pt-6">
+            <p class="text-sm leading-6 text-ink-2">{t('contact.mailAlt')}</p>
+            <div class="mt-3 flex flex-wrap items-center gap-3">
+              <span class="sr-only">{t('contact.emailLabel')}</span>
+              <a class="link text-lg font-semibold" href={mailto}>{email}</a>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                data-copy={email}
+                data-copied={t('contact.copied')}
+                data-fail={t('contact.copyFail')}
+                hidden
+              >
+                <Icon name="copy" size={16} />
+                <span data-copy-label>{t('contact.copy')}</span>
+              </button>
+              <span class="sr-only" aria-live="polite" data-copy-status></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <form
+            class="consult-form"
+            method="post"
+            action="/api/consult"
+            novalidate
+            aria-label={f.label}
+            data-consult-form
+            data-sitekey={siteKey}
+            data-lang={lang}
+            data-messages={JSON.stringify(messages)}
           >
-            <Icon name="copy" size={16} />
-            <span data-copy-label>{t('contact.copy')}</span>
-          </button>
-          <span class="sr-only" aria-live="polite" data-copy-status></span>
+            <p class="mb-6 text-sm leading-6 text-ink-2"><span class="field-req" aria-hidden="true">*</span> {f.requiredNote}</p>
+            <fieldset class="grid gap-6" data-fields>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="field">
+                  <label class="field-label" for="cf-name">{f.name} <span class="field-req" aria-hidden="true">*</span></label>
+                  <input class="field-input" id="cf-name" name="name" type="text" autocomplete="name" required maxlength={LIMITS.name} aria-describedby="cf-name-error" />
+                  <p class="field-error" id="cf-name-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="cf-company">{f.company}</label>
+                  <input class="field-input" id="cf-company" name="company" type="text" autocomplete="organization" maxlength={LIMITS.company} aria-describedby="cf-company-error" />
+                  <p class="field-error" id="cf-company-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="cf-email">{f.email} <span class="field-req" aria-hidden="true">*</span></label>
+                  <input class="field-input" id="cf-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength={LIMITS.email} aria-describedby="cf-email-help cf-email-error" />
+                  <p class="field-help" id="cf-email-help">{f.emailHelp}</p>
+                  <p class="field-error" id="cf-email-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="cf-phone">{f.phone}</label>
+                  <input class="field-input" id="cf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength={LIMITS.phone} aria-describedby="cf-phone-help cf-phone-error" />
+                  <p class="field-help" id="cf-phone-help">{f.phoneHelp}</p>
+                  <p class="field-error" id="cf-phone-error" hidden></p>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="cf-task">{f.task} <span class="field-req" aria-hidden="true">*</span></label>
+                <textarea class="field-input" id="cf-task" name="task" rows="4" required maxlength={LIMITS.task} placeholder={f.taskPlaceholder} aria-describedby="cf-task-error"></textarea>
+                <p class="field-error" id="cf-task-error" hidden></p>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="cf-current">{f.current}</label>
+                <textarea class="field-input" id="cf-current" name="current" rows="3" maxlength={LIMITS.current} placeholder={f.currentPlaceholder} aria-describedby="cf-current-error"></textarea>
+                <p class="field-error" id="cf-current-error" hidden></p>
+              </div>
+
+              <div class="field sm:max-w-xs">
+                <label class="field-label" for="cf-volume">{f.volume}</label>
+                <div class="field-select">
+                  <select class="field-input" id="cf-volume" name="volume" aria-describedby="cf-volume-error">
+                    <option value="">{f.volumeNone}</option>
+                    {VOLUMES.map((v) => <option value={v}>{f.volumes[v]}</option>)}
+                  </select>
+                  <Icon name="chevron-down" size={18} class="field-select-icon" />
+                </div>
+                <p class="field-error" id="cf-volume-error" hidden></p>
+              </div>
+
+              <div class="field consent">
+                <div class="flex items-start gap-3">
+                  <input class="field-check" id="cf-consent" name="consent" type="checkbox" required aria-describedby="cf-consent-detail cf-consent-error" />
+                  <label class="font-semibold leading-6" for="cf-consent">{f.consent} <span class="field-req" aria-hidden="true">*</span></label>
+                </div>
+                <div class="consent-detail" id="cf-consent-detail">
+                  <dl class="grid gap-x-4 gap-y-1 sm:grid-cols-[6.5rem_minmax(0,1fr)]">
+                    {consentItems.map(([k, v]) => (
+                      <>
+                        <dt class="text-ink-2">{k}</dt>
+                        <dd>{v}</dd>
+                      </>
+                    ))}
+                  </dl>
+                  <p class="mt-2 text-ink-2">
+                    {f.consentNote} <a class="link" href={privacyHref}>{f.privacyLink}</a>
+                  </p>
+                </div>
+                <p class="field-error" id="cf-consent-error" hidden></p>
+              </div>
+
+              <div class="hp-field" aria-hidden="true">
+                <label for="cf-hp">{f.honeypot}</label>
+                <input id="cf-hp" name="hp" type="text" tabindex="-1" autocomplete="off" />
+              </div>
+            </fieldset>
+
+            <div class="consult-captcha" data-turnstile></div>
+            <p class="form-alert" role="alert" data-form-error hidden></p>
+
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+              <button type="submit" class="btn btn-primary" disabled data-submit>
+                <Icon name="mail" />
+                <span data-submit-label>{f.submit}</span>
+              </button>
+              <span class="sr-only" aria-live="polite" data-status></span>
+            </div>
+            <noscript><p class="mt-4 text-sm leading-6 text-ink-2">{f.noscript}</p></noscript>
+          </form>
+
+          <div class="consult-done" hidden tabindex="-1" aria-labelledby="consult-done-title" data-consult-done>
+            <div class="receipt-wrap mx-auto w-full max-w-md">
+              <div class="receipt">
+                <span class="stamp" aria-hidden="true">{done.stamp}</span>
+                <p id="consult-done-title" class="pr-24 text-lg font-bold leading-7" data-print style="--i:0">{done.title}</p>
+                <hr class="receipt-rule mt-4" data-print style="--i:1" />
+                <dl class="mt-2">
+                  <div class="receipt-row" data-print style="--i:2">
+                    <dt>{done.id}</dt>
+                    <dd data-done-id></dd>
+                  </div>
+                  <div class="receipt-row" data-print style="--i:3">
+                    <dt>{done.time}</dt>
+                    <dd data-done-time></dd>
+                  </div>
+                  <div class="receipt-row" data-print style="--i:4">
+                    <dt class="shrink-0">{done.email}</dt>
+                    <dd class="min-w-0 break-all text-right" data-done-email></dd>
+                  </div>
+                </dl>
+                <hr class="receipt-rule mt-3" data-print style="--i:5" />
+                <p class="mt-4 text-sm leading-6 text-ink-2" data-print style="--i:6">{done.note}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <ul class="mt-10 space-y-3 text-ink-2" role="list">
-        <li class="flex gap-3">
-          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-ink" />
-          <span>{t('contact.assure')}</span>
-        </li>
-        <li class="flex gap-3">
-          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-ink" />
-          <span>{t('contact.partner')}</span>
-        </li>
-      </ul>
     </div>
   </div>
 </section>
 
 <script>
+  import { initConsultForm } from '../../scripts/consult-form';
+
+  initConsultForm();
+
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
     if (!navigator.clipboard) return;
     btn.hidden = false;

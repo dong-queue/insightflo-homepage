@@ -1,0 +1,197 @@
+---
+// 문의 관리: 목록, 상태 변경, 메모, 삭제. Cloudflare Access 뒤에 두고, 이 페이지도 Access 토큰을 다시 확인합니다.
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { checkAdmin } from '../../server/access';
+import { isSameOrigin } from '../../server/http';
+import {
+  STATUSES,
+  STATUS_LABEL,
+  MEMO_MAX,
+  RETENTION_DAYS,
+  isStatus,
+  listInquiries,
+  countByStatus,
+  updateInquiry,
+  deleteInquiry,
+  purgeExpired,
+  type Inquiry,
+  type NotifyStatus,
+} from '../../server/inquiries';
+import { formatKst } from '../../server/notify';
+import { UUID_RE, shortId } from '../../lib/consult-schema';
+import { ui } from '../../i18n/ui';
+
+export const prerender = false;
+
+const { env } = Astro.locals.runtime;
+const auth = await checkAdmin(Astro.request, env, import.meta.env.DEV);
+if (!auth.ok) {
+  const message =
+    auth.status === 503
+      ? '관리 화면이 아직 설정되지 않았습니다. Cloudflare Access 설정(ACCESS_TEAM_DOMAIN, ACCESS_AUD)을 확인해 주십시오.'
+      : '이 화면에 접근할 권한이 없습니다.';
+  return new Response(`<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="robots" content="noindex"><title>문의 관리</title><p>${message}</p></html>`, {
+    status: auth.status,
+    headers: { 'content-type': 'text/html; charset=utf-8' },
+  });
+}
+
+const filterParam = Astro.url.searchParams.get('status');
+const filter = isStatus(filterParam) ? filterParam : null;
+const backTo = (extra: Record<string, string>, hash = '') => {
+  const params = new URLSearchParams();
+  if (filter) params.set('status', filter);
+  Object.entries(extra).forEach(([k, v]) => params.set(k, v));
+  const query = params.toString();
+  return `/admin/inquiries${query ? `?${query}` : ''}${hash}`;
+};
+
+if (Astro.request.method === 'POST') {
+  if (!isSameOrigin(Astro.request)) return new Response('Forbidden', { status: 403 });
+  const form = await Astro.request.formData();
+  const id = String(form.get('id') ?? '');
+  const action = String(form.get('_action') ?? '');
+  if (!UUID_RE.test(id)) return Astro.redirect(backTo({ done: 'error' }), 303);
+  if (action === 'update') {
+    const status = String(form.get('status') ?? '');
+    if (!isStatus(status)) return Astro.redirect(backTo({ done: 'error' }, `#i-${id}`), 303);
+    const memo = String(form.get('memo') ?? '').replace(/\r\n?/g, '\n').slice(0, MEMO_MAX);
+    const ok = await updateInquiry(env.DB, id, { status, memo });
+    return Astro.redirect(backTo({ done: ok ? 'updated' : 'error' }, `#i-${id}`), 303);
+  }
+  if (action === 'delete') {
+    const ok = await deleteInquiry(env.DB, id);
+    return Astro.redirect(backTo({ done: ok ? 'deleted' : 'error' }), 303);
+  }
+  return Astro.redirect(backTo({ done: 'error' }), 303);
+}
+
+await purgeExpired(env.DB).catch(() => 0);
+const [items, counts] = await Promise.all([listInquiries(env.DB, { status: filter }), countByStatus(env.DB)]);
+
+const doneParam = Astro.url.searchParams.get('done');
+const flash =
+  doneParam === 'updated' ? '저장했습니다.' : doneParam === 'deleted' ? '삭제했습니다.' : doneParam === 'error' ? '처리하지 못했습니다. 다시 시도해 주십시오.' : '';
+
+const volumeLabel = ui.ko.contact.form.volumes as Record<string, string>;
+const NOTIFY_LABEL: Record<NotifyStatus, string> = { sent: '보냄', failed: '실패', skipped: '보내지 않음', pending: '보내는 중' };
+const tabs: { key: string; label: string; href: string; count: number; current: boolean }[] = [
+  { key: 'all', label: '전체', href: '/admin/inquiries', count: counts.all, current: !filter },
+  ...STATUSES.map((s) => ({ key: s, label: STATUS_LABEL[s], href: `/admin/inquiries?status=${s}`, count: counts[s], current: filter === s })),
+];
+const replyHref = (item: Inquiry) =>
+  `mailto:${item.email}?subject=${encodeURIComponent(`Re: [InsightFlo] 상담 신청 ${shortId(item.id)}`)}`;
+const excerpt = (value: string, max = 90) => {
+  const flat = value.replace(/\s+/g, ' ').trim();
+  return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
+};
+---
+
+<AdminLayout title="문의 관리" email={auth.email}>
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <h1 class="h-section">문의 관리</h1>
+    <p class="text-sm text-ink-2">문의는 접수일로부터 {RETENTION_DAYS}일이 지나면 자동으로 지워집니다.</p>
+  </div>
+
+  <nav class="mt-8 flex flex-wrap gap-2" aria-label="상태별 보기">
+    {tabs.map((tab) => (
+      <a class:list={['adm-tab', tab.current && 'is-current']} href={tab.href} aria-current={tab.current ? 'page' : undefined}>
+        {tab.label} <span class="tabular-nums">{tab.count}</span>
+      </a>
+    ))}
+  </nav>
+
+  {flash && <p class="mt-6 text-sm font-medium" role="status">{flash}</p>}
+
+  {items.length === 0 ? (
+    <div class="mt-10 rounded-lg bg-sheet p-8 hairline">
+      <p class="font-semibold">{filter ? '이 상태의 문의가 없습니다.' : '아직 들어온 문의가 없습니다.'}</p>
+      <p class="mt-2 text-sm text-ink-2">홈페이지 상담 신청서로 접수된 문의가 여기에 쌓입니다.</p>
+    </div>
+  ) : (
+    <ul class="mt-8 divide-y divide-line border-y border-line" role="list">
+      {items.map((item) => (
+        <li>
+          <details class="adm-row" id={`i-${item.id}`} data-row>
+            <summary class="adm-summary">
+              <time class="text-sm tabular-nums text-ink-2" datetime={item.created_at}>{formatKst(item.created_at)}</time>
+              <span class="min-w-0">
+                <span class="font-semibold">{item.name}</span>
+                {item.company && <span class="text-ink-2"> {item.company}</span>}
+                <span class="mt-1 block truncate text-sm text-ink-2">{excerpt(item.task)}</span>
+              </span>
+              <span class:list={['adm-badge', `is-${item.status}`]}>{STATUS_LABEL[item.status] ?? item.status}</span>
+            </summary>
+
+            <div class="adm-body">
+              <dl class="adm-meta">
+                <dt>접수 번호</dt>
+                <dd class="tabular-nums">{shortId(item.id)}</dd>
+                <dt>이메일</dt>
+                <dd><a class="link" href={replyHref(item)}>{item.email}</a></dd>
+                <dt>연락처</dt>
+                <dd>{item.phone ? <a class="link" href={`tel:${item.phone.replace(/[^0-9+]/g, '')}`}>{item.phone}</a> : '적지 않음'}</dd>
+                <dt>한 달 건수</dt>
+                <dd>{item.volume ? volumeLabel[item.volume] ?? item.volume : '선택하지 않음'}</dd>
+                <dt>언어</dt>
+                <dd>{item.lang === 'en' ? '영어' : '한국어'}{item.page && ` (${item.page})`}</dd>
+                <dt>알림</dt>
+                <dd>텔레그램 {NOTIFY_LABEL[item.telegram_status] ?? item.telegram_status}, 메일 {NOTIFY_LABEL[item.email_status] ?? item.email_status}</dd>
+              </dl>
+
+              <div class="space-y-6">
+                <div>
+                  <h2 class="text-sm font-semibold">맡기고 싶은 업무</h2>
+                  <p class="adm-text mt-2">{item.task}</p>
+                </div>
+                <div>
+                  <h2 class="text-sm font-semibold">지금 처리하는 방식</h2>
+                  <p class="adm-text mt-2">{item.current_process || '적지 않음'}</p>
+                </div>
+
+                <form method="post" class="space-y-4">
+                  <input type="hidden" name="_action" value="update" />
+                  <input type="hidden" name="id" value={item.id} />
+                  <div class="field max-w-xs">
+                    <label class="field-label" for={`st-${item.id}`}>상태</label>
+                    <select class="field-input" id={`st-${item.id}`} name="status">
+                      {STATUSES.map((s) => <option value={s} selected={s === item.status}>{STATUS_LABEL[s]}</option>)}
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for={`memo-${item.id}`}>메모</label>
+                    <textarea class="field-input" id={`memo-${item.id}`} name="memo" rows="3" maxlength={MEMO_MAX}>{item.memo}</textarea>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-3">
+                    <button type="submit" class="btn btn-primary btn-sm">저장</button>
+                    <a class="btn btn-ghost btn-sm" href={replyHref(item)}>메일로 회신</a>
+                  </div>
+                </form>
+
+                <form method="post" data-confirm="이 문의를 삭제할까요? 되돌릴 수 없습니다.">
+                  <input type="hidden" name="_action" value="delete" />
+                  <input type="hidden" name="id" value={item.id} />
+                  <button type="submit" class="link text-sm font-medium text-stamp">삭제</button>
+                </form>
+              </div>
+            </div>
+          </details>
+        </li>
+      ))}
+    </ul>
+  )}
+</AdminLayout>
+
+<script>
+  // 주소의 #i-... 문의를 펼치고, 삭제 전에 한 번 묻습니다.
+  const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (target instanceof HTMLDetailsElement) {
+    target.open = true;
+    target.scrollIntoView({ block: 'start' });
+  }
+  document.querySelectorAll<HTMLFormElement>('form[data-confirm]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      if (!window.confirm(form.dataset.confirm ?? '')) event.preventDefault();
+    });
+  });
+</script>
