@@ -50,6 +50,8 @@ npm run preview   # 빌드 미리보기
 
 방향: 개인은 FDE, 제품은 paperwork(구 papercompany, 저장소 papercompany-runtime). 주요 행동은 상담 메일 하나.
 
+문체: 한국어 문안은 합니다체로 통일합니다(해요체 금지). 버튼과 라벨은 명사형(예: "상담 메일 쓰기").
+
 1. **Hero** (#hero) - 약속 한 줄 + 실행 영수증(실제 시험 실행 숫자)
 2. **Paperwork** (#paperwork) - 실행 흐름(게이트, 재작업 루프)과 세 가지 성질
 3. **Tagline** - 믿음 한 줄, 스크롤하면 단어별로 켜짐
