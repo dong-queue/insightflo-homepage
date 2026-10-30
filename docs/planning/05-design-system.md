@@ -1,3 +1,5 @@
+> 2026-10-30 개편으로 이 문서의 색·서체·컴포넌트 정의는 더 이상 쓰지 않습니다. 현재 기준: `10-content-strategy.md` 7절, `src/styles/global.css`.
+
 # Design System
 
 ## 1. 디자인 방향

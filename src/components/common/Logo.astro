@@ -1,0 +1,30 @@
+---
+// 로고: 한글 "인"을 도장으로 그린 표식 + 워드마크.
+// 인사이트플로의 "인", 인플로의 "인", 도장 印을 겹친 뜻입니다. 파비콘: public/favicon.svg
+interface Props {
+  size?: number;
+  wordmark?: boolean;
+  class?: string;
+}
+const { size = 28, wordmark = true, class: className = '' } = Astro.props;
+---
+
+<span class:list={['inline-flex items-center gap-2', className]}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 32 32"
+    width={size}
+    height={size}
+    aria-hidden="true"
+    focusable="false"
+    class="seal shrink-0"
+  >
+    <rect x="1" y="1" width="30" height="30" rx="8" class="seal-body" />
+    <g class="seal-glyph" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12.5" cy="11.5" r="4.4" />
+      <path d="M21.5 6.5v12.5" />
+      <path d="M10 19.5V25h13" />
+    </g>
+  </svg>
+  {wordmark && <span class="text-base font-bold tracking-tight text-ink">InsightFlo</span>}
+</span>

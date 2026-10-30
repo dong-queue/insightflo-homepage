@@ -1,46 +1,70 @@
 ---
-// @TASK 다국어 Footer
-import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+// 푸터 (다국어)
+import Logo from './Logo.astro';
+import { useTranslations, homePath, links, defaultLang, type Lang } from '../../i18n/ui';
 
-const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
 const t = useTranslations(lang);
-const currentYear = new Date().getFullYear();
+const year = new Date().getFullYear();
 const companyHref = lang === 'en' ? '/en/company/' : '/company/';
+const channels = [
+  { label: 'GitHub', href: links.github },
+  { label: 'LinkedIn', href: links.linkedin },
+  { label: 'YouTube', href: links.youtube },
+  { label: 'mock.co.kr', href: links.mock },
+];
 ---
 
-<footer class="py-16 bg-slate-50 border-t border-slate-200">
-  <div class="max-w-7xl mx-auto px-6">
-    <!-- Top Row -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-10">
-      <!-- Logo -->
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-slate-300 rounded-lg flex items-center justify-center text-white">
-          <span class="material-symbols-outlined text-sm">hub</span>
-        </div>
-        <span class="text-lg font-bold tracking-tight text-slate-500 uppercase">InsightFlo</span>
+<footer class="border-t border-line">
+  <div class="mx-auto max-w-page px-6 py-16 sm:px-8">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+      <div class="sm:col-span-2 lg:col-span-5">
+        <a href={homePath(lang)} class="inline-block rounded-lg" aria-label={t('nav.home')}>
+          <Logo />
+        </a>
+        <p class="mt-4 max-w-xs text-ink-2">{t('footer.tagline')}</p>
       </div>
 
-      <!-- Social Links -->
-      <div class="flex gap-8 text-sm text-slate-400 font-bold">
-        <a href="https://www.linkedin.com/in/dongkyookwak" target="_blank" rel="noopener noreferrer" class="hover:text-deep-blue transition-colors">LinkedIn</a>
-        <a href="https://github.com/insightflo" target="_blank" rel="noopener noreferrer" class="hover:text-deep-blue transition-colors">GitHub</a>
+      <nav class="lg:col-span-2" aria-labelledby="footer-site">
+        <h2 id="footer-site" class="text-sm font-semibold">{t('footer.siteTitle')}</h2>
+        <ul class="mt-4 space-y-3 text-ink-2" role="list">
+          <li><a class="link" href={companyHref}>{t('footer.company')}</a></li>
+          <li><a class="link" href="/privacy/">{t('footer.privacy')}</a></li>
+        </ul>
+      </nav>
+
+      <nav class="lg:col-span-3" aria-labelledby="footer-channels">
+        <h2 id="footer-channels" class="text-sm font-semibold">{t('footer.channelsTitle')}</h2>
+        <ul class="mt-4 space-y-3 text-ink-2" role="list">
+          {channels.map((c) => (
+            <li>
+              <a class="link" href={c.href} target="_blank" rel="noopener noreferrer">
+                {c.label}<span class="sr-only"> ({t('newTab')})</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="lg:col-span-2">
+        <h2 class="text-sm font-semibold">{t('footer.contactTitle')}</h2>
+        <p class="mt-4 text-ink-2">
+          <a class="link" href={`mailto:${links.email}`}>{links.email}</a>
+        </p>
       </div>
     </div>
 
-    <!-- Bottom Row -->
-    <div class="mt-12 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
-      <div class="text-center md:text-left">
-        <p class="text-xs text-slate-400 mb-2">{t('footer.biz')}</p>
-        <p class="text-sm text-slate-400">© {currentYear} InsightFlo. {t('footer.rights')}</p>
-      </div>
-      <div class="flex gap-6 text-xs text-slate-400">
-        <a href={companyHref} class="hover:underline">{t('footer.company')}</a>
-        <a href="/privacy/" class="hover:underline">{t('footer.privacy')}</a>
-      </div>
+    <div class="mt-12 border-t border-line pt-8 text-sm text-ink-2">
+      <h2 class="sr-only">{t('footer.bizLabel')}</h2>
+      <dl class="flex flex-wrap gap-x-6 gap-y-2">
+        {t('footer.biz').map(([k, v]: [string, string]) => (
+          <div class="flex gap-2">
+            <dt>{k}</dt>
+            <dd class="text-ink">{v}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="mt-4">© {year} InsightFlo</p>
     </div>
   </div>
 </footer>
-
-<style>
-  .text-deep-blue { color: #1E3A5F; }
-</style>

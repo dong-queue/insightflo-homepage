@@ -1,36 +1,26 @@
 ---
-// FAQ - 자주 묻는 질문 (다국어)
+// 자주 묻는 질문 (다국어). 구조화 데이터는 pages/Home.astro에서 만듭니다.
+import Icon from '../common/Icon.astro';
 import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
 
-const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
 const t = useTranslations(lang);
+const items: { q: string; a: string }[] = t('faq.items');
 ---
 
-<section id="faq" class="py-24 bg-white">
-  <div class="max-w-3xl mx-auto px-6">
-    <!-- Section Header -->
-    <div class="text-center mb-16">
-      <h2 class="text-sm font-bold text-deep-blue uppercase tracking-widest mb-3">FAQ</h2>
-      <h3 class="text-4xl font-bold text-navy">{t('faq.heading')}</h3>
-    </div>
-
-    <div class="space-y-4">
-      {t('faq.items').map((item: { q: string; a?: string; aHtml?: string }) => (
-        <details class="group bg-slate-50 rounded-2xl border border-slate-100 open:bg-white open:border-slate-200 open:shadow-md transition-all">
-          <summary class="flex items-center justify-between cursor-pointer px-6 md:px-8 py-6 text-lg font-bold text-navy list-none">
-            {item.q}
-            <span class="material-symbols-outlined text-deep-blue group-open:rotate-180 transition-transform">expand_more</span>
+<section id="faq" class="border-t border-line py-16 lg:py-24" aria-labelledby="faq-title">
+  <div class="mx-auto grid max-w-page gap-12 px-6 sm:px-8 lg:grid-cols-12 lg:gap-8">
+    <h2 id="faq-title" class="h-section lg:col-span-4">{t('faq.title')}</h2>
+    <div class="divide-y divide-line border-y border-line lg:col-span-8">
+      {items.map((item) => (
+        <details class="faq-item">
+          <summary class="flex items-start justify-between gap-6 py-6 text-lg font-semibold leading-7">
+            <span>{item.q}</span>
+            <Icon name="plus" size={20} class="faq-icon mt-1 shrink-0" />
           </summary>
-          <div class="px-6 md:px-8 pb-6 text-slate-600 leading-relaxed">
-            {item.aHtml ? <Fragment set:html={item.aHtml} /> : item.a}
-          </div>
+          <p class="-mt-2 pb-6 pr-10 text-ink-2">{item.a}</p>
         </details>
       ))}
     </div>
   </div>
 </section>
-
-<style>
-  summary::-webkit-details-marker { display: none; }
-  .text-deep-blue { color: #1E3A5F; }
-</style>

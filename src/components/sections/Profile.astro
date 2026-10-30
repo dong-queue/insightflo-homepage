@@ -1,0 +1,89 @@
+---
+// 대표 소개: 경력, 자격, 고객 프로젝트, 공개 채널
+import Icon from '../common/Icon.astro';
+import { useTranslations, links, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
+const t = useTranslations(lang);
+const creds: string[] = t('profile.creds');
+const timeline: { when: string; org: string; what: string }[] = t('profile.timeline');
+const projects: { name: string; client: string; what: string; status: string; url: string; linkLabel: string }[] =
+  t('profile.projects');
+const channels: { name: string; desc: string; url: string }[] = t('profile.channels');
+const head: string[] = t('profile.projectsHead');
+---
+
+<section id="profile" class="border-t border-line py-16 lg:py-24" aria-labelledby="profile-title">
+  <div class="mx-auto max-w-page px-6 sm:px-8">
+    <h2 id="profile-title" class="h-section max-w-3xl">{t('profile.title')}</h2>
+
+    <div class="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-4">
+        <p class="text-3xl font-bold leading-9 tracking-tight">{t('profile.name')}</p>
+        <p class="mt-2 text-ink-2">{t('profile.role')}</p>
+        <ul class="mt-6 space-y-2" role="list">
+          {creds.map((c) => (
+            <li class="flex gap-2">
+              <Icon name="check" size={18} class="mt-1 shrink-0" />
+              <span>{c}</span>
+            </li>
+          ))}
+        </ul>
+        <a class="link mt-6 inline-block font-medium" href={links.linkedin} target="_blank" rel="noopener noreferrer">
+          {t('profile.linkedin')}<span class="sr-only"> ({t('newTab')})</span>
+        </a>
+      </div>
+
+      <ol class="divide-y divide-line border-y border-line lg:col-span-8" aria-label={t('profile.timelineLabel')}>
+        {timeline.map((row) => (
+          <li class="grid gap-2 py-5 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
+            <span class="whitespace-pre-line text-sm font-medium leading-6 tabular-nums text-ink-2">{row.when}</span>
+            <div>
+              <h3 class="font-semibold">{row.org}</h3>
+              <p class="mt-1 text-ink-2">{row.what}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <h3 class="mt-20 text-xl font-semibold">{t('profile.projectsTitle')}</h3>
+    <div class="form-sheet mt-6">
+      <div class="register-head hidden grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_7rem] gap-6 px-6 py-3 text-sm font-semibold md:grid" aria-hidden="true">
+        {head.map((h) => <span>{h}</span>)}
+      </div>
+      <ul role="list">
+        {projects.map((p) => (
+          <li class="register-row grid gap-2 px-6 py-5 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_7rem] md:gap-6">
+            <div>
+              <h4 class="text-lg font-semibold leading-7">{p.name}</h4>
+              <p class="text-sm text-ink-2">{p.client}</p>
+            </div>
+            <div class="text-ink-2">
+              <p>{p.what}</p>
+              {p.url && (
+                <a class="link mt-2 inline-block text-sm font-medium text-ink" href={p.url} target="_blank" rel="noopener noreferrer">
+                  {p.linkLabel}<span class="sr-only"> ({t('newTab')})</span>
+                </a>
+              )}
+            </div>
+            <span class="text-sm font-semibold md:pt-1">{p.status}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <h3 class="mt-16 text-xl font-semibold">{t('profile.channelsTitle')}</h3>
+    <ul class="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4" role="list">
+      {channels.map((c) => (
+        <li>
+          <a class="group block rounded-sm" href={c.url} target="_blank" rel="noopener noreferrer">
+            <span class="link font-semibold">{c.name}</span>
+            <span class="mt-1 block text-sm leading-6 text-ink-2">{c.desc}</span>
+            <span class="sr-only"> ({t('newTab')})</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,60 @@
+---
+// 태그라인: 믿음 한 줄. 스크롤하면 단어가 읽는 순서대로 켜집니다.
+// 스크립트가 없거나 움직임 줄이기 설정이면 처음부터 전부 보입니다.
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
+const t = useTranslations(lang);
+const lines: string[] = t('tagline.lines');
+---
+
+<div class="border-y border-line">
+  <div class="tagline mx-auto max-w-page px-6 py-24 sm:px-8" data-tagline>
+    <p class="h-display max-w-4xl text-4xl text-balance sm:text-5xl lg:text-6xl">
+      {lines.map((line) => (
+        <span class="block">
+          {line.split(' ').map((word, i, all) => (
+            <>
+              <span class="tw">{word}</span>{i < all.length - 1 ? ' ' : ''}
+            </>
+          ))}
+        </span>
+      ))}
+    </p>
+  </div>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-tagline]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (el && !reduce) {
+    const words = [...el.querySelectorAll<HTMLElement>('.tw')];
+    let lit = 0;
+    let ticking = false;
+    el.setAttribute('data-armed', '');
+
+    const update = () => {
+      ticking = false;
+      const r = el.getBoundingClientRect();
+      const h = window.innerHeight;
+      const progress = Math.min(1, Math.max(0, (h * 0.85 - r.top) / (h * 0.4 + r.height)));
+      const target = Math.round(progress * words.length);
+      while (lit < target) {
+        words[lit].classList.add('is-lit');
+        lit += 1;
+      }
+      if (lit >= words.length) {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onScroll);
+      }
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+  }
+</script>

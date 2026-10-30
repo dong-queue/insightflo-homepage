@@ -1,45 +1,78 @@
 ---
-// @TASK 다국어 Contact
-import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+// 마지막 행동: 상담 메일(제목·본문 양식 포함), 주소 복사, 위험 감소 문구
+import Icon from '../common/Icon.astro';
+import { useTranslations, links, defaultLang, type Lang } from '../../i18n/ui';
 
-const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
 const t = useTranslations(lang);
-
-const email = "teo@insightflo.co";
+const email = links.email;
+const mailto = `mailto:${email}?subject=${encodeURIComponent(t('contact.mailSubject'))}&body=${encodeURIComponent(t('contact.mailBody'))}`;
 ---
 
-<section id="contact" class="py-24 bg-white">
-  <div class="max-w-4xl mx-auto px-6 text-center">
-    <!-- Mail Icon -->
-    <div class="inline-flex p-3 bg-blue-50 rounded-2xl mb-8">
-      <span class="material-symbols-outlined text-deep-blue text-4xl">mail</span>
-    </div>
+<section id="contact" class="pb-16 lg:pb-24" aria-labelledby="contact-title">
+  <div class="mx-auto max-w-page px-6 sm:px-8">
+    <div class="rounded-2xl bg-sheet p-8 hairline sm:p-12 lg:p-16">
+      <h2 id="contact-title" class="h-display max-w-3xl text-4xl sm:text-5xl">{t('contact.title')}</h2>
+      <p class="t-lead mt-6 max-w-measure">{t('contact.sub')}</p>
 
-    <!-- Title -->
-    <h2 class="text-4xl md:text-5xl font-bold text-navy mb-6">{t('contact.heading')}</h2>
+      <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <a class="btn btn-primary" href={mailto}>
+          <Icon name="mail" />
+          {t('contact.cta')}
+        </a>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="sr-only">{t('contact.emailLabel')}</span>
+          <span class="select-all text-lg font-semibold">{email}</span>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            data-copy={email}
+            data-copied={t('contact.copied')}
+            data-fail={t('contact.copyFail')}
+            hidden
+          >
+            <Icon name="copy" size={16} />
+            <span data-copy-label>{t('contact.copy')}</span>
+          </button>
+          <span class="sr-only" aria-live="polite" data-copy-status></span>
+        </div>
+      </div>
 
-    <!-- Description -->
-    <p class="text-xl text-slate-600 mb-12">
-      {t('contact.lines')[0]}<br/>
-      {t('contact.lines')[1]}
-    </p>
-
-    <!-- Email & CTA -->
-    <div class="flex flex-col items-center gap-8">
-      <a href={`mailto:${email}`} class="text-3xl md:text-4xl font-extrabold text-deep-blue hover:text-blue-600 transition-colors">
-        {email}
-      </a>
-      <a href={`mailto:${email}`} class="inline-flex items-center gap-3 px-12 py-5 bg-deep-blue text-white rounded-xl font-bold text-lg hover:bg-navy transition-all shadow-xl shadow-blue-900/10">
-        <span class="material-symbols-outlined">send</span>
-        {t('contact.cta')}
-      </a>
+      <ul class="mt-10 space-y-3 text-ink-2" role="list">
+        <li class="flex gap-3">
+          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-ink" />
+          <span>{t('contact.assure')}</span>
+        </li>
+        <li class="flex gap-3">
+          <Icon name="check" size={20} class="mt-0.5 shrink-0 text-ink" />
+          <span>{t('contact.partner')}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </section>
 
-<style>
-  .text-deep-blue { color: #1E3A5F; }
-  .bg-deep-blue { background-color: #1E3A5F; }
-  .text-navy { color: #0F172A; }
-  .bg-navy { background-color: #0F172A; }
-</style>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    if (!navigator.clipboard) return;
+    btn.hidden = false;
+    const label = btn.querySelector('[data-copy-label]');
+    const status = btn.parentElement?.querySelector('[data-copy-status]');
+    const original = label?.textContent ?? '';
+    let timer = 0;
+    btn.addEventListener('click', async () => {
+      window.clearTimeout(timer);
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+        if (label) label.textContent = btn.dataset.copied ?? '';
+        if (status) status.textContent = btn.dataset.copied ?? '';
+      } catch {
+        if (status) status.textContent = btn.dataset.fail ?? '';
+      }
+      timer = window.setTimeout(() => {
+        if (label) label.textContent = original;
+        if (status) status.textContent = '';
+      }, 2500);
+    });
+  });
+</script>

@@ -1,0 +1,39 @@
+---
+// 홈 화면 구성 (ko, en 공용). 섹션 순서와 목적: docs/planning/10-content-strategy.md 6절
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../sections/Hero.astro';
+import Paperwork from '../sections/Paperwork.astro';
+import Tagline from '../sections/Tagline.astro';
+import Proof from '../sections/Proof.astro';
+import HowWeWork from '../sections/HowWeWork.astro';
+import Profile from '../sections/Profile.astro';
+import FAQ from '../sections/FAQ.astro';
+import Contact from '../sections/Contact.astro';
+import { useTranslations, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
+const t = useTranslations(lang);
+const items: { q: string; a: string }[] = t('faq.items');
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: lang,
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+---
+
+<Layout title={t('meta.homeTitle')} description={t('meta.homeDescription')} schema={[faqSchema]}>
+  <Hero />
+  <Paperwork />
+  <Tagline />
+  <Proof />
+  <HowWeWork />
+  <Profile />
+  <FAQ />
+  <Contact />
+</Layout>

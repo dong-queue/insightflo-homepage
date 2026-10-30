@@ -1,0 +1,67 @@
+---
+// 회사 소개 (ko, en 공용). 스타트업 검증용 프로필(Crunchbase 등)과 연결됩니다.
+import Layout from '../../layouts/Layout.astro';
+import { useTranslations, homePath, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
+const t = useTranslations(lang);
+const info: { k: string; v: string; href: string }[] = t('company.info');
+const what: { t: string; d: string }[] = t('company.what');
+const isExternal = (href: string) => href.startsWith('http');
+---
+
+<Layout title={t('meta.companyTitle')} description={t('meta.companyDescription')}>
+  <article class="mx-auto max-w-page px-6 pt-32 pb-16 sm:px-8 lg:pb-24">
+    <div class="max-w-3xl">
+      <h1 class="h-display text-4xl sm:text-5xl">{t('company.h1')}</h1>
+      <p class="t-lead mt-6">{t('company.lead')}</p>
+    </div>
+
+    <div class="mt-16 grid gap-12 lg:grid-cols-12 lg:gap-8">
+      <section class="lg:col-span-5" aria-labelledby="company-info">
+        <h2 id="company-info" class="text-xl font-semibold">{t('company.infoTitle')}</h2>
+        <dl class="mt-6 divide-y divide-line border-y border-line">
+          {info.map((row) => (
+            <div class="grid grid-cols-[8rem_minmax(0,1fr)] gap-4 py-3">
+              <dt class="text-sm leading-6 text-ink-2">{row.k}</dt>
+              <dd class="leading-6">
+                {row.href ? (
+                  <a
+                    class="link"
+                    href={row.href}
+                    target={isExternal(row.href) ? '_blank' : undefined}
+                    rel={isExternal(row.href) ? 'noopener noreferrer' : undefined}
+                  >
+                    {row.v}
+                    {isExternal(row.href) && <span class="sr-only"> ({t('newTab')})</span>}
+                  </a>
+                ) : (
+                  row.v
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <div class="space-y-12 lg:col-span-6 lg:col-start-7">
+        <section aria-labelledby="company-what">
+          <h2 id="company-what" class="text-xl font-semibold">{t('company.whatTitle')}</h2>
+          <ul class="mt-6 space-y-8" role="list">
+            {what.map((item) => (
+              <li>
+                <h3 class="text-lg font-semibold">{item.t}</h3>
+                <p class="mt-2 text-ink-2">{item.d}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+        <section aria-labelledby="company-tech">
+          <h2 id="company-tech" class="text-xl font-semibold">{t('company.techTitle')}</h2>
+          <p class="mt-4 text-ink-2">{t('company.tech')}</p>
+        </section>
+        <a class="btn btn-ghost" href={homePath(lang)}>{t('company.back')}</a>
+      </div>
+    </div>
+  </article>
+</Layout>

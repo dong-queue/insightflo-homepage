@@ -1,0 +1,62 @@
+---
+// paperwork: 문제 → 실행 흐름(게이트, 재작업 루프) → 세 가지 성질
+import Icon from '../common/Icon.astro';
+import { useTranslations, links, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
+const t = useTranslations(lang);
+const flow: { t: string; d: string; gate: string }[] = t('paperwork.flow');
+const pillars: { t: string; d: string }[] = t('paperwork.pillars');
+---
+
+<section id="paperwork" class="py-16 lg:py-24" aria-labelledby="paperwork-title">
+  <div class="mx-auto max-w-page px-6 sm:px-8">
+    <div class="max-w-3xl">
+      <h2 id="paperwork-title" class="h-section">{t('paperwork.title')}</h2>
+      <p class="t-lead mt-6">{t('paperwork.lead')}</p>
+    </div>
+
+    <div class="flow mt-12">
+      <ol class="flow-steps" aria-label={t('paperwork.flowLabel')}>
+        {flow.map((s, i) => (
+          <li class="flow-step" data-gate={s.gate || undefined}>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-medium tabular-nums text-ink-2">{String(i + 1).padStart(2, '0')}</span>
+              {s.gate === 'check' && <Icon name="check" size={16} class="text-ink" />}
+              {s.gate === 'human' && <Icon name="user" size={16} class="text-stamp" />}
+            </div>
+            <h3 class:list={['mt-3 text-base font-semibold leading-6', s.gate === 'human' && 'text-stamp']}>{s.t}</h3>
+            <p class="mt-1 text-sm leading-6 text-ink-2">{s.d}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="flow-loop">
+        <span class="flow-loop-line" aria-hidden="true"></span>
+        <span class="flow-loop-head" aria-hidden="true"><Icon name="chevron-up" size={14} /></span>
+        <Icon name="loop" size={16} class="flow-loop-icon shrink-0" />
+        <span class="flow-loop-text">{t('paperwork.loop')}</span>
+      </p>
+    </div>
+
+    <ul class="form-sheet form-grid mt-16" role="list" aria-label={t('paperwork.pillarsLabel')}>
+      {pillars.map((p) => (
+        <li class="form-cell">
+          <h3 class="form-head">{p.t}</h3>
+          <p class="form-body">{p.d}</p>
+        </li>
+      ))}
+    </ul>
+
+    <p class="mt-12 max-w-3xl text-sm leading-6 text-ink-2">
+      {t('paperwork.repoNote')}
+      <span class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+        <a class="link font-medium text-ink" href={links.repo} target="_blank" rel="noopener noreferrer">
+          {t('paperwork.repoLink')}<span class="sr-only"> ({t('newTab')})</span>
+        </a>
+        <a class="link font-medium text-ink" href={links.intro} target="_blank" rel="noopener noreferrer">
+          {t('paperwork.introLink')}<span class="sr-only"> ({t('newTab')})</span>
+        </a>
+      </span>
+    </p>
+  </div>
+</section>

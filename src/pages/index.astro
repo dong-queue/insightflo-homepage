@@ -1,29 +1,6 @@
 ---
-// @TASK 전체 섹션 통합 + 다국어
-import Layout from '../layouts/Layout.astro';
-import Hero from '../components/sections/Hero.astro';
-import Products from '../components/sections/Products.astro';
-import Services from '../components/sections/Services.astro';
-import WhyUs from '../components/sections/WhyUs.astro';
-import TechStack from '../components/sections/TechStack.astro';
-import About from '../components/sections/About.astro';
-import Portfolio from '../components/sections/Portfolio.astro';
-import FAQ from '../components/sections/FAQ.astro';
-import Contact from '../components/sections/Contact.astro';
-import { useTranslations, defaultLang, type Lang } from '../i18n/ui';
-
-const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
-const t = useTranslations(lang);
+// 홈 (한국어). 구성은 components/pages/Home.astro
+import Home from '../components/pages/Home.astro';
 ---
 
-<Layout title={t('meta.homeTitle')} description={t('meta.homeDescription')}>
-  <Hero />
-  <Products />
-  <Services />
-  <WhyUs />
-  <TechStack />
-  <About />
-  <Portfolio />
-  <FAQ />
-  <Contact />
-</Layout>
+<Home />

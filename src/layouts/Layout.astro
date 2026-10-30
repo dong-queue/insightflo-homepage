@@ -1,60 +1,101 @@
 ---
-// @TASK P1-T3 - Layout 통합 (Header + Footer) + 다국어 (ko/en, hreflang)
-
+// 기본 레이아웃: 메타, 구조화 데이터, 서체, 건너뛰기 링크, 내비, 푸터 (ko/en, hreflang)
 import '../styles/global.css';
 import Header from '../components/common/Header.astro';
 import Footer from '../components/common/Footer.astro';
-import { defaultLang, type Lang } from '../i18n/ui';
+import { defaultLang, useTranslations, links, type Lang } from '../i18n/ui';
 
 interface Props {
   title: string;
   description?: string;
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
 }
 
-const {
-  title,
-  description = 'AI 기반 서비스 개발 전문가 - InsightFlo',
-} = Astro.props;
+const { title, description, schema = [], noindex = false } = Astro.props;
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
+const t = useTranslations(lang);
+const desc: string = description ?? t('meta.homeDescription');
 
-const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
-
-// 현재 페이지의 한국어/영어 대체 주소 (hreflang)
-const site = Astro.site ?? 'https://insightflo.co';
+const site = Astro.site ?? new URL('https://insightflo.co');
 const base = (Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/').replace(/\/?$/, '/');
 const koHref = new URL(base, site).href;
 const enHref = new URL('/en' + (base === '/' ? '/' : base), site).href;
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL(t('meta.ogImage'), site).href;
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'InsightFlo',
+  alternateName: '인사이트플로',
+  url: 'https://insightflo.co/',
+  logo: new URL('/apple-touch-icon.png', site).href,
+  email: links.email,
+  foundingDate: '2025-06-16',
+  address: { '@type': 'PostalAddress', addressLocality: 'Seoul', addressCountry: 'KR' },
+  founder: {
+    '@type': 'Person',
+    name: '곽동규',
+    alternateName: 'Dongkyoo Kwak',
+    jobTitle: 'Forward Deployed Engineer',
+    sameAs: [links.linkedin],
+  },
+  sameAs: [links.github, links.linkedinCompany, links.youtube, links.crunchbase],
+};
+const jsonLd = [organization, ...schema];
 ---
 
 <!doctype html>
-<html lang={lang} class="scroll-smooth">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={desc} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
 
-    <!-- hreflang -->
     <link rel="alternate" hreflang="ko" href={koHref} />
     <link rel="alternate" hreflang="en" href={enHref} />
     <link rel="alternate" hreflang="x-default" href={koHref} />
 
-    <!-- Open Graph -->
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={desc} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="InsightFlo" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t('meta.ogAlt')} />
     <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'ko_KR'} />
     <meta property="og:locale:alternate" content={lang === 'en' ? 'ko_KR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#f3f4f2" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- Fonts -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
-  <body class="antialiased bg-white text-slate-800">
+  <body>
+    <a class="skip-link" href="#main">{t('skip')}</a>
     <Header />
-    <main>
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer />

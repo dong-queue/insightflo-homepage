@@ -1,0 +1,64 @@
+---
+// 운영 기록 (어두운 면): 제 사업이 이 위에서 돈다는 증거 두 개
+import { useTranslations, links, defaultLang, type Lang } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
+const t = useTranslations(lang);
+const media = t('proof.media');
+const ab = t('proof.ab');
+const head: string[] = ab.head;
+const rows: string[][] = ab.rows;
+---
+
+<section id="proof" class="on-night py-16 lg:py-24" aria-labelledby="proof-title">
+  <div class="mx-auto max-w-page px-6 sm:px-8">
+    <div class="max-w-3xl">
+      <h2 id="proof-title" class="h-section">{t('proof.title')}</h2>
+      <p class="mt-6 text-lg leading-8 text-night-ink-2">{t('proof.lead')}</p>
+    </div>
+
+    <div class="mt-12 grid gap-6 lg:grid-cols-2">
+      <article class="panel-night flex flex-col p-6 sm:p-8">
+        <img
+          src="/images/mock-co-kr.webp"
+          width="1280"
+          height="800"
+          alt={media.alt}
+          loading="lazy"
+          decoding="async"
+          class="h-auto w-full rounded-xs"
+        />
+        <h3 class="mt-8 text-2xl font-bold leading-8 tracking-tight">{media.title}</h3>
+        <p class="mt-2 text-sm leading-6 text-night-ink-2">{media.note}</p>
+        <a class="link mt-6 self-start text-sm font-medium" href={links.mock} target="_blank" rel="noopener noreferrer">
+          {media.link}<span class="sr-only"> ({t('newTab')})</span>
+        </a>
+      </article>
+
+      <article class="panel-night flex flex-col p-6 sm:p-8">
+        <h3 class="text-2xl font-bold leading-8 tracking-tight">{ab.title}</h3>
+        <p class="mt-2 text-sm leading-6 text-night-ink-2">{ab.desc}</p>
+        <table class="mt-8 w-full text-sm">
+          <caption class="pb-3 text-left text-xs leading-5 text-night-ink-2">{ab.caption}</caption>
+          <thead>
+            <tr class="border-b border-night-line">
+              {head.map((h, i) => (
+                <th scope="col" class:list={['pb-2 font-medium text-night-ink-2', i === 0 ? 'text-left' : 'text-right']}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr class="border-b border-night-line">
+                <th scope="row" class="py-3 text-left font-normal">{row[0]}</th>
+                <td class="t-num py-3 text-right text-night-ink-2">{row[1]}</td>
+                <td class="t-num py-3 text-right font-semibold text-ember">{row[2]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="mt-6 text-sm leading-6 text-night-ink-2">{ab.note}</p>
+      </article>
+    </div>
+  </div>
+</section>

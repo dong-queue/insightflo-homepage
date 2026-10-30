@@ -1,70 +1,143 @@
 ---
-// @TASK 다국어 Header - 내비 사전 + KO/EN 전환기
-import { useTranslations, alternatePath, defaultLang, type Lang } from '../../i18n/ui';
+// 떠 있는 내비게이션 + 모바일 전체 높이 메뉴 (다국어)
+import Logo from './Logo.astro';
+import { useTranslations, alternatePath, homePath, defaultLang, type Lang } from '../../i18n/ui';
 
-const lang = ((Astro.currentLocale as Lang) ?? defaultLang);
+const lang = (Astro.currentLocale as Lang) ?? defaultLang;
 const t = useTranslations(lang);
-const switchHref = alternatePath(Astro.url.pathname, lang === 'ko' ? 'en' : 'ko');
+const home = homePath(lang);
+const other: Lang = lang === 'ko' ? 'en' : 'ko';
+const is404 = /^\/404(\.html)?\/?$/.test(Astro.url.pathname);
+const switchHref = is404 ? homePath(other) : alternatePath(Astro.url.pathname, other);
+
+const items = [
+  { id: 'paperwork', label: t('nav.paperwork') },
+  { id: 'proof', label: t('nav.proof') },
+  { id: 'how', label: t('nav.how') },
+  { id: 'faq', label: t('nav.faq') },
+];
 ---
 
-<header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
-  <nav class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-    <!-- Logo -->
-    <a href="#hero" class="flex items-center gap-2">
-      <div class="w-10 h-10 bg-deep-blue rounded-lg flex items-center justify-center text-white">
-        <span class="material-symbols-outlined font-bold">hub</span>
-      </div>
-      <span class="text-xl font-bold tracking-tight text-navy uppercase">InsightFlo</span>
+<header class="nav-shell">
+  <nav class="nav-bar" aria-label={t('nav.label')}>
+    <a href={home} class="rounded-lg py-1 pr-2" aria-label={t('nav.home')}>
+      <Logo />
     </a>
 
-    <!-- Desktop Nav -->
-    <div class="hidden md:flex items-center gap-8">
-      <a href="#products" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">{t('nav.products')}</a>
-      <a href="#services" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">{t('nav.services')}</a>
-      <a href="#about" class="text-sm font-semibold text-slate-600 hover:text-deep-blue transition-colors">{t('nav.about')}</a>
-      <a href="#contact" class="px-5 py-2.5 bg-deep-blue text-white rounded-lg text-sm font-bold hover:bg-navy transition-colors">{t('nav.contact')}</a>
+    <ul class="hidden items-center gap-6 lg:flex" role="list">
+      {items.map((it) => (
+        <li>
+          <a class="nav-link" href={`${home}#${it.id}`} data-spy={it.id}>{it.label}</a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="ml-auto flex items-center gap-1 lg:ml-0">
       <a
         href={switchHref}
-        class="text-xs font-bold text-slate-500 border border-slate-200 rounded-full px-3 py-1.5 hover:border-deep-blue hover:text-deep-blue transition-colors"
-        aria-label={lang === 'ko' ? 'Switch to English' : '한국어로 전환'}
-      >{lang === 'ko' ? 'EN' : 'KO'}</a>
+        hreflang={other}
+        lang={other}
+        class="nav-link hidden px-3 sm:inline-block"
+        aria-label={t('nav.switchLabel')}
+      >{t('nav.switchShort')}</a>
+      <a href={`${home}#contact`} class="btn btn-primary btn-sm">{t('nav.cta')}</a>
+      <button
+        type="button"
+        class="menu-toggle lg:hidden"
+        aria-expanded="false"
+        aria-controls="menu-panel"
+        data-label-open={t('nav.menu')}
+        data-label-close={t('nav.close')}
+      >
+        <span class="bar" aria-hidden="true"></span>
+        <span class="bar" aria-hidden="true"></span>
+        <span class="sr-only" data-toggle-label>{t('nav.menu')}</span>
+      </button>
     </div>
-
-    <!-- Mobile Menu Button -->
-    <button id="mobile-menu-button" class="md:hidden p-2" aria-label={lang === 'ko' ? '메뉴' : 'Menu'}>
-      <span class="material-symbols-outlined text-slate-600">menu</span>
-    </button>
   </nav>
 
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-slate-100 px-6 py-4 space-y-4">
-    <a href="#products" class="block text-slate-600 font-semibold py-2" data-mobile-link>{t('nav.products')}</a>
-    <a href="#services" class="block text-slate-600 font-semibold py-2" data-mobile-link>{t('nav.services')}</a>
-    <a href="#about" class="block text-slate-600 font-semibold py-2" data-mobile-link>{t('nav.about')}</a>
-    <a href="#contact" class="block bg-deep-blue text-white rounded-lg px-5 py-3 text-center font-bold" data-mobile-link>{t('nav.contact')}</a>
-    <a href={switchHref} class="block text-center text-sm font-bold text-slate-500 border border-slate-200 rounded-lg px-5 py-3" data-mobile-link>{lang === 'ko' ? 'English' : '한국어'}</a>
+  <div id="menu-panel" class="menu-panel lg:hidden" hidden>
+    <ul role="list">
+      {items.map((it, i) => (
+        <li class="menu-item" style={`--i:${i}`}>
+          <a class="menu-link" href={`${home}#${it.id}`} data-menu-link>{it.label}</a>
+        </li>
+      ))}
+      <li class="menu-item" style={`--i:${items.length}`}>
+        <a class="menu-link" href={`${home}#contact`} data-menu-link>{t('nav.cta')}</a>
+      </li>
+      <li class="menu-item mt-8" style={`--i:${items.length + 1}`}>
+        <a class="link text-base font-medium text-ink-2" href={switchHref} hreflang={other} lang={other} data-menu-link>
+          {t('nav.switchLong')}
+        </a>
+      </li>
+    </ul>
   </div>
 </header>
 
 <script>
-  const btn = document.getElementById('mobile-menu-button');
-  const menu = document.getElementById('mobile-menu');
-  const links = document.querySelectorAll('[data-mobile-link]');
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const panel = document.getElementById('menu-panel');
+  const label = toggle?.querySelector('[data-toggle-label]');
 
-  btn?.addEventListener('click', () => {
-    menu?.classList.toggle('hidden');
+  function isOpen() {
+    return toggle?.getAttribute('aria-expanded') === 'true';
+  }
+
+  function setOpen(open: boolean) {
+    if (!toggle || !panel) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (label) label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '';
+    panel.hidden = !open;
+    panel.toggleAttribute('data-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) panel.querySelector<HTMLElement>('a')?.focus();
+  }
+
+  toggle?.addEventListener('click', () => setOpen(!isOpen()));
+  panel?.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  document.addEventListener('keydown', (e) => {
+    if (!isOpen() || !toggle || !panel) return;
+    if (e.key === 'Escape') {
+      setOpen(false);
+      toggle.focus();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const links = [...panel.querySelectorAll<HTMLElement>('a')];
+      const first = toggle;
+      const last = links[links.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
   });
 
-  links.forEach(link => {
-    link.addEventListener('click', () => {
-      menu?.classList.add('hidden');
-    });
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
+    if (e.matches && isOpen()) setOpen(false);
   });
+
+  // 지금 읽는 섹션을 내비에 표시
+  const spyLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-spy]')];
+  const sections = [...document.querySelectorAll<HTMLElement>('main section[id]')];
+  if (spyLinks.length && sections.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          spyLinks.forEach((a) => {
+            if (a.dataset.spy === entry.target.id) a.setAttribute('aria-current', 'location');
+            else a.removeAttribute('aria-current');
+          });
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
+    );
+    sections.forEach((s) => io.observe(s));
+  }
 </script>
-
-<style>
-  .bg-deep-blue { background-color: #1E3A5F; }
-  .text-deep-blue { color: #1E3A5F; }
-  .text-navy { color: #0F172A; }
-  .bg-navy { background-color: #0F172A; }
-</style>

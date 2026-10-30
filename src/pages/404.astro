@@ -1,0 +1,22 @@
+---
+// 404: GitHub Pages가 dist/404.html을 자동으로 사용합니다.
+import Layout from '../layouts/Layout.astro';
+import Logo from '../components/common/Logo.astro';
+import { ui } from '../i18n/ui';
+
+const ko = ui.ko.notFound;
+const en = ui.en.notFound;
+---
+
+<Layout title={ui.ko.meta.notFoundTitle} description={ko.desc} noindex>
+  <section class="mx-auto flex min-h-svh max-w-page flex-col justify-center px-6 py-24 sm:px-8">
+    <Logo size={40} wordmark={false} />
+    <h1 class="h-display mt-8 text-4xl sm:text-5xl">{ko.title}</h1>
+    <p class="t-lead mt-4">{ko.desc}</p>
+    <p class="mt-2 text-ink-2" lang="en">{en.title}. {en.desc}</p>
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a class="btn btn-primary" href="/">{ko.home}</a>
+      <a class="btn btn-ghost" href="/en/" lang="en">{en.home}</a>
+    </div>
+  </section>
+</Layout>
