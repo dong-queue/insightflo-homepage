@@ -4,6 +4,7 @@ import '../styles/global.css';
 import Header from '../components/common/Header.astro';
 import Footer from '../components/common/Footer.astro';
 import { defaultLang, useTranslations, links, type Lang } from '../i18n/ui';
+import { THEME_KEY, THEME_COLOR, LANG_REVEAL_KEY, REVEAL_MS, REVEAL_EASING } from '../scripts/reveal';
 
 interface Props {
   title: string;
@@ -75,6 +76,54 @@ const jsonLd = [organization, ...schema];
     <meta name="twitter:description" content={desc} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="theme-color" content="#f3f4f2" />
+    <script define:vars={{ THEME_KEY, THEME_COLOR, LANG_REVEAL_KEY, REVEAL_MS, REVEAL_EASING }}>
+      // 첫 화면을 그리기 전에 실행됩니다: 테마(깜빡임 없이), 언어 전환 원형 연출.
+      var root = document.documentElement;
+      root.classList.add('js');
+      var theme = null;
+      try { theme = localStorage.getItem(THEME_KEY); } catch (e) {}
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', theme);
+      var themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute('content', THEME_COLOR[theme]);
+
+      function skipReveal() {
+        var reduce = false;
+        try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+        return reduce || /SamsungBrowser\//i.test(navigator.userAgent);
+      }
+      function readReveal(consume) {
+        var data = null;
+        try {
+          data = JSON.parse(sessionStorage.getItem(LANG_REVEAL_KEY) || 'null');
+          if (consume) sessionStorage.removeItem(LANG_REVEAL_KEY);
+        } catch (e) {}
+        return data && Date.now() - data.t < 5000 ? data : null;
+      }
+      // 이전 페이지: 언어 전환으로 떠날 때만 전환을 남기고, 다른 이동은 평소처럼 바로 넘어갑니다.
+      window.addEventListener('pageswap', function (event) {
+        if (event.viewTransition && (!readReveal(false) || skipReveal())) event.viewTransition.skipTransition();
+      });
+      // 새 페이지: 누른 언어 버튼 자리에서 새 언어 화면이 원으로 퍼집니다.
+      window.addEventListener('pagereveal', function (event) {
+        var vt = event.viewTransition;
+        if (!vt) return;
+        var data = readReveal(true);
+        if (!data || skipReveal()) { vt.skipTransition(); return; }
+        vt.finished.then(null, function () {});
+        vt.ready.then(function () {
+          var w = window.innerWidth, h = window.innerHeight;
+          var r = Math.hypot(Math.max(data.x, w - data.x), Math.max(data.y, h - data.y));
+          var at = 'at ' + data.x + 'px ' + data.y + 'px';
+          root.animate(
+            { clipPath: ['circle(0px ' + at + ')', 'circle(' + r + 'px ' + at + ')'] },
+            { duration: REVEAL_MS, easing: REVEAL_EASING, pseudoElement: '::view-transition-new(root)' }
+          );
+        }, function () {});
+      });
+    </script>
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
@@ -89,7 +138,6 @@ const jsonLd = [organization, ...schema];
     />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
 
-    <script is:inline>document.documentElement.classList.add('js');</script>
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>

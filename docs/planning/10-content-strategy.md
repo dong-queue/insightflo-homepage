@@ -89,6 +89,8 @@
 
 **시그니처**: 히어로의 실행 영수증. 실제 시험 실행 숫자가 한 줄씩 인쇄되고, "사람 검토로 멈춤 13건" 위에 검토 대기 도장이 찍힙니다. 움직임을 줄이는 설정이면 완성된 상태로 바로 보입니다.
 
+**다크 모드와 전환 연출**: 기본은 라이트이고, 방문자가 직접 고르기 전까지 시스템 설정을 따릅니다(선택은 localStorage `insightflo:theme`에 저장). 테마는 첫 화면을 그리기 전에 적용해서 깜빡이지 않습니다. 다크 토큰은 `global.css`의 `:root[data-theme="dark"]` 한 곳에 있습니다. 테마 전환과 언어 전환은 mock.co.kr의 원형 전환(manual-onboarding `src/reader/theme-reveal.ts`)을 옮겨 왔습니다(`src/scripts/reveal.ts`). 새 화면이 누른 버튼을 중심으로 한 원 안에서 850ms 동안 퍼지며, 움직임 줄이기 설정, 삼성 인터넷, 지원하지 않는 브라우저에서는 바로 바뀝니다. 언어 전환은 문서 간 View Transition을 쓰고, 읽던 섹션(#해시)을 이어서 보여 줍니다. 다른 링크 이동에는 연출을 쓰지 않습니다.
+
 **로고**: 한글 "인"을 도장으로 그린 표식. 인사이트플로의 "인", 인플로의 "인", 도장 印을 겹친 뜻입니다. `src/components/common/Logo.astro`, `public/favicon.svg`에 있습니다.
 
 **서체**: Pretendard Variable(본문·제목), IBM Plex Mono(영수증과 표의 숫자). KLIC 디자인 시스템도 한글은 Pretendard를 씁니다. 처음에 쓴 Geist Mono는 Impeccable 검사기가 과사용 서체로 표시해서, 사무기기 계보가 있는 IBM Plex Mono로 바꿨습니다.

@@ -66,6 +66,8 @@ npm run preview   # 빌드 미리보기
 - 재료: 종이(`paper`), 잉크(`ink`), 인주색 하나(`stamp`, 사람이 개입하는 지점에만), 증거 섹션의 어두운 면(`night`)
 - 서체: Pretendard Variable, 숫자와 영수증은 IBM Plex Mono
 - 토큰은 `src/styles/global.css`의 `@theme`에만 둡니다. Tailwind 기본 팔레트는 꺼져 있습니다(`--color-*: initial`)
+- 다크 모드: `:root[data-theme="dark"]` 토큰 블록. 색 토큰을 추가하면 라이트(@theme)와 다크 두 곳에 넣고, `--color-paper`를 바꾸면 `src/scripts/reveal.ts`의 THEME_COLOR도 맞춥니다
+- 전환 연출: 테마·언어 전환은 `src/scripts/reveal.ts`(mock.co.kr 원형 전환) 하나를 씁니다. 스크립트에 `transition` 같은 유틸리티 이름을 변수로 쓰면 Tailwind가 그 클래스를 만들어 내니 피합니다
 - 금지: eyebrow 라벨, 자간 넓힌 대문자 라벨, 배경 그라디언트, Material Symbols, `transition: all`, 근거 없는 숫자
 - 움직임: `ease-settle`(cubic-bezier(0.22, 1, 0.36, 1)), transform과 opacity만. 움직임 줄이기 설정과 스크립트 없는 환경에서도 내용이 보여야 합니다
 - 숫자를 바꿀 때는 `docs/planning/10-content-strategy.md` 4절의 출처 표를 같이 고칩니다

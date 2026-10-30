@@ -4,6 +4,7 @@
 /* Hallmark · dismissed 46a · every figure comes from the owner's records: the tax portal test run and the judgment layer run in the 2026-10-29 portfolio, and the mock.co.kr sitemap count of 2026-10-30 */
 /* Hallmark · dismissed 28a · the first image is the mock.co.kr screenshot in the proof section, far below the fold; the hero receipt is text, so lazy loading stays */
 /* Impeccable (pbakaus/impeccable 4.8.0): rendered pages pass `impeccable detect`. Its cream-palette finding moved the ground from cream to neutral office paper, overused-font replaced Geist Mono with IBM Plex Mono, and the craft floor removed the big number template, the icon trio and monospace outside data. */
+/* Theme: light by default; dark follows the system until the visitor chooses (stored in localStorage). The theme toggle and the language switch reveal the new state in a circle that grows from the control, ported from mock.co.kr (src/scripts/reveal.ts: 850ms, cubic-bezier(.16,1,.3,1)). */
 /* Notes against elayadesign landing-page-design: Pretendard is kept although its Latin derives from Inter, because Korean legibility comes first. Display line height is 1.15 to 1.25, because Hangul collides at 1. Main buttons use 12px vertical padding for a 48px touch target. Strategy and the source of every number: docs/planning/10-content-strategy.md */
 @import "tailwindcss" source("../");
 
@@ -24,6 +25,8 @@
   --color-night-ink: #f2f3f1;
   --color-night-ink-2: #a9aca6;
   --color-ember: #ff7a45;
+  --color-seal: #b8391a;
+  --color-seal-ink: #fdfdfc;
   --color-glass: #fdfdfcd1;
   --color-veil: #f3f4f2f0;
   --color-glass-edge: #15161317;
@@ -45,9 +48,32 @@
 }
 
 :root {
+  color-scheme: light;
   --mask-clear: #0000;
   --mask-solid: #000;
   --gap-flow: 0.75rem;
+}
+
+/* Dark theme: the same tokens, re-pointed. Set by the head script on <html data-theme>. Contrast: ink 15.7:1, ink-2 7.6:1, stamp 6.7:1 on paper. Mirror --color-paper in src/scripts/reveal.ts THEME_COLOR. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #131412;
+  --color-sheet: #1b1c1a;
+  --color-ink: #ecedea;
+  --color-ink-hover: #d2d4cf;
+  --color-ink-2: #a4a79f;
+  --color-line: #2c2e2a;
+  --color-line-2: #41443e;
+  --color-stamp: #f07a55;
+  --color-stamp-wash: #3a211a;
+  --color-night: #0a0b09;
+  --color-night-2: #171816;
+  --color-night-line: #2c2e2a;
+  --color-glass: #1b1c1ad9;
+  --color-veil: #131412f0;
+  --color-glass-edge: #ecedea1f;
+  --color-shadow-soft: #00000059;
+  --color-shadow-deep: #000000a6;
 }
 
 @layer base {
@@ -59,9 +85,11 @@
     scrollbar-color: var(--color-line-2) var(--color-paper);
     caret-color: var(--color-stamp);
     accent-color: var(--color-ink);
-    scroll-behavior: smooth;
     scroll-padding-top: 6rem;
     -webkit-text-size-adjust: 100%;
+  }
+  html[data-ready] {
+    scroll-behavior: smooth;
   }
   body {
     overflow-x: clip;
@@ -99,7 +127,8 @@
     outline: none;
   }
   @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
+    html,
+    html[data-ready] { scroll-behavior: auto; }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-delay: 0ms !important;
@@ -140,8 +169,8 @@
   .hairline { box-shadow: var(--shadow-line); }
 
   /* Logo seal */
-  .seal-body { fill: var(--color-stamp); }
-  .seal-glyph { stroke: var(--color-sheet); }
+  .seal-body { fill: var(--color-seal); }
+  .seal-glyph { stroke: var(--color-seal-ink); }
 
   /* Skip link */
   .skip-link {
@@ -325,6 +354,64 @@
     }
   }
 
+  /* Theme toggle: an icon button in the bar, a text button in the phone menu */
+  .theme-toggle {
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    color: var(--color-ink-2);
+    transition-property: color, background-color, transform;
+    transition-duration: 300ms;
+    transition-timing-function: var(--ease-settle);
+  }
+  .theme-toggle:hover {
+    color: var(--color-ink);
+    background: var(--color-line);
+  }
+  .theme-toggle:active { transform: scale(0.96); }
+  .theme-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 500;
+    color: var(--color-ink-2);
+  }
+  .theme-switch-track {
+    position: relative;
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    box-shadow: inset 0 0 0 1.5px var(--color-ink-2);
+    transition: background-color 300ms var(--ease-settle), box-shadow 300ms var(--ease-settle);
+  }
+  .theme-switch-knob {
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    background: var(--color-ink-2);
+    transition: transform 300ms var(--ease-settle), background-color 300ms var(--ease-settle);
+  }
+  .theme-switch[aria-pressed="true"] .theme-switch-track {
+    background: var(--color-ink);
+    box-shadow: inset 0 0 0 1.5px var(--color-ink);
+  }
+  .theme-switch[aria-pressed="true"] .theme-switch-knob {
+    transform: translateX(1rem);
+    background: var(--color-paper);
+  }
+  /* The toggle needs the script; without it the page stays light and the control is not shown. */
+  html:not(.js) [data-theme-toggle] { display: none !important; }
+  .theme-icon-sun { display: none; }
+  :root[data-theme="dark"] .theme-icon-sun { display: block; }
+  :root[data-theme="dark"] .theme-icon-moon { display: none; }
+
   /* Run receipt */
   .receipt-wrap {
     filter: drop-shadow(0 1px 1px var(--color-shadow-soft)) drop-shadow(0 20px 24px var(--color-shadow-deep));
@@ -357,6 +444,7 @@
     color: var(--color-stamp);
     font-weight: 600;
   }
+  :root[data-theme="dark"] .stamp { mix-blend-mode: normal; }
   .receipt-total {
     border-top: 3px double var(--color-ink);
   }
@@ -522,6 +610,18 @@
     background: var(--color-night);
     color: var(--color-night-ink);
   }
+  /* In the dark theme the band keeps an edge. Drawn as a pseudo element, so the section itself stays a plain band and its panels are not cards inside a card. */
+  .on-night { position: relative; }
+  :root[data-theme="dark"] .on-night::before,
+  :root[data-theme="dark"] .on-night::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    height: 1px;
+    background: var(--color-night-line);
+  }
+  :root[data-theme="dark"] .on-night::before { top: 0; }
+  :root[data-theme="dark"] .on-night::after { bottom: 0; }
   .panel-night {
     border-radius: 0.75rem;
     color: var(--color-night-ink);
@@ -551,3 +651,14 @@
   65% { opacity: 0.95; transform: rotate(-12deg) scale(0.96); }
   100% { opacity: 0.9; transform: rotate(-12deg) scale(1); }
 }
+
+/* Circle reveal (src/scripts/reveal.ts). The default cross-fade is off; each transition defines its own animation.
+   Root snapshots are pinned to the viewport with object-fit: cover so mobile Chrome does not stretch them while the
+   address bar changes size (mock.co.kr, 2026-10-29). Cross-document transitions are used only for the language switch;
+   the head script skips every other navigation. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-group(root) { animation: none; width: 100%; height: 100%; }
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; width: 100%; height: 100%; object-fit: cover; }

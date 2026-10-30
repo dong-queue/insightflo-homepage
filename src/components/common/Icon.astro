@@ -1,7 +1,7 @@
 ---
 // 직접 그린 선 아이콘 (24 그리드, 1.75 선). Material Symbols 대신 사용.
 interface Props {
-  name: 'check' | 'user' | 'loop' | 'chevron-up' | 'mail' | 'copy' | 'plus';
+  name: 'check' | 'user' | 'loop' | 'chevron-up' | 'mail' | 'copy' | 'plus' | 'sun' | 'moon';
   size?: number;
   class?: string;
 }
@@ -15,6 +15,8 @@ const paths: Record<Props['name'], string> = {
   mail: '<rect x="3" y="5.25" width="18" height="13.5" rx="2"/><path d="m3.75 6.75 8.25 6 8.25-6"/>',
   copy: '<rect x="8.25" y="8.25" width="12" height="12" rx="2"/><path d="M15.75 8.25V6a2 2 0 0 0-2-2h-7.5a2 2 0 0 0-2 2v7.75a2 2 0 0 0 2 2h2"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.75v1.75M12 19.5v1.75M2.75 12H4.5M19.5 12h1.75M5.46 5.46l1.24 1.24M17.3 17.3l1.24 1.24M5.46 18.54l1.24-1.24M17.3 6.7l1.24-1.24"/>',
+  moon: '<path d="M20.25 14.4A8.25 8.25 0 1 1 9.6 3.75a6.5 6.5 0 0 0 10.65 10.65Z"/>',
 };
 ---
 

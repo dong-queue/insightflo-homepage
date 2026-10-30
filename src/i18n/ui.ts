@@ -50,6 +50,7 @@ const ko = {
     switchShort: 'EN',
     switchLong: 'English',
     switchLabel: 'Switch to English',
+    theme: '다크 모드',
   },
   newTab: '새 창에서 열림',
   hero: {
@@ -287,6 +288,7 @@ const en: typeof ko = {
     switchShort: 'KO',
     switchLong: '한국어',
     switchLabel: '한국어로 보기',
+    theme: 'Dark mode',
   },
   newTab: 'opens in a new tab',
   hero: {
